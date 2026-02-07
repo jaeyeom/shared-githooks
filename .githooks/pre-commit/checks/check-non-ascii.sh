@@ -19,7 +19,7 @@ fi
 count=$(git diff --cached --name-only --diff-filter=A -z "$against" |
   LC_ALL=C tr -d '[ -~]\0' | wc -c)
 
-if [ "$count" != "0" ] && [ "$count" != " 0" ]; then
+if [ "$count" -gt 0 ]; then
   cat >&2 <<'EOF'
 Error: Attempt to add a non-ASCII file name.
 
