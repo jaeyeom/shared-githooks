@@ -10,7 +10,7 @@ if [ ! -f Makefile ]; then
   exit 0
 fi
 
-if ! grep -q '^check-format' Makefile 2>/dev/null; then
+if ! grep -q '^check-format:' Makefile 2>/dev/null; then
   exit 0
 fi
 
