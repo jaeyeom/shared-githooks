@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
 # Pre-commit: run affected Bazel tests.
 # Skips if no BUILD/BUILD.bazel file or bazel is not installed.
+# Skips if the Makefile check target already runs bazel test.
 # Falls back to `bazel test //...:all` if the affected tests script is missing.
 
 set -euo pipefail
 
 if [ ! -f BUILD ] && [ ! -f BUILD.bazel ]; then
+  exit 0
+fi
+
+if [ -f Makefile ] &&
+  grep -q '^check:' Makefile 2>/dev/null &&
+  grep -qE 'bazel\b.*\btest\b' Makefile 2>/dev/null; then
+  echo "Skipping standalone Bazel tests: Makefile has check target and mentions bazel test"
   exit 0
 fi
 
