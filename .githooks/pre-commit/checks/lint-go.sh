@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
 # Pre-commit: run golangci-lint on Go projects.
 # Skips if no .golangci.yml or golangci-lint is not installed.
+# Skips if the Makefile check target already runs golangci-lint.
 
 set -euo pipefail
 
 if [ ! -f .golangci.yml ]; then
+  exit 0
+fi
+
+if [ -f Makefile ] &&
+  grep -q '^check:' Makefile 2>/dev/null &&
+  grep -q 'golangci-lint' Makefile 2>/dev/null; then
+  echo "Skipping standalone Go lint: Makefile mentions golangci-lint in check target"
   exit 0
 fi
 
