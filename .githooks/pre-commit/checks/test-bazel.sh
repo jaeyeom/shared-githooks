@@ -40,7 +40,7 @@ if [ -n "$AFFECTED_TESTS_SCRIPT" ] && [ -x "$AFFECTED_TESTS_SCRIPT" ]; then
   echo "Finding affected tests..."
   AFFECTED_TESTS=$("$AFFECTED_TESTS_SCRIPT" 2>/dev/null) || {
     echo "Warning: affected tests script failed, falling back to full test" >&2
-    if ! bazel test //...:all; then
+    if ! bazel test --test_summary=terse //...:all; then
       echo >&2 "Bazel tests failed. Commit aborted."
       exit 1
     fi
@@ -61,7 +61,7 @@ if [ -n "$AFFECTED_TESTS_SCRIPT" ] && [ -x "$AFFECTED_TESTS_SCRIPT" ]; then
 
   if [ -n "$FORMAT_TESTS" ]; then
     echo "Running format tests..."
-    if ! echo "$FORMAT_TESTS" | xargs bazel test; then
+    if ! echo "$FORMAT_TESTS" | xargs bazel test --test_summary=terse; then
       echo "Format tests failed. Running auto-formatter..."
       bazel run //:format 2>/dev/null || true
       echo >&2 "Commit failed: code was not formatted properly and has been reformatted. Please review and commit again."
@@ -72,7 +72,7 @@ if [ -n "$AFFECTED_TESTS_SCRIPT" ] && [ -x "$AFFECTED_TESTS_SCRIPT" ]; then
   if [ -n "$OTHER_TESTS" ]; then
     if [ "$(uname -s)" = "Darwin" ]; then
       echo "Skipping affected tests on Darwin."
-    elif ! echo "$OTHER_TESTS" | xargs bazel test; then
+    elif ! echo "$OTHER_TESTS" | xargs bazel test --test_summary=terse; then
       echo >&2 "Bazel tests failed. Commit aborted."
       exit 1
     fi
@@ -81,7 +81,7 @@ if [ -n "$AFFECTED_TESTS_SCRIPT" ] && [ -x "$AFFECTED_TESTS_SCRIPT" ]; then
   echo "All affected tests passed."
 else
   echo "Warning: bazel_affected_tests.sh not found, running all tests..." >&2
-  if ! bazel test //...:all; then
+  if ! bazel test --test_summary=terse //...:all; then
     echo >&2 "Bazel tests failed. Commit aborted."
     exit 1
   fi
