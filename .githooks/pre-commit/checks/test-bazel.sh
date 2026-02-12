@@ -2,7 +2,7 @@
 # Pre-commit: run affected Bazel tests.
 # Skips if no BUILD/BUILD.bazel file or bazel is not installed.
 # Skips if the Makefile check target already runs bazel test.
-# Falls back to `bazel test //...:all` if the affected tests script is missing.
+# Falls back to `bazel test //...:all` if bazel-affected-tests is not installed.
 
 set -euo pipefail
 
@@ -10,9 +10,9 @@ if [ ! -f BUILD ] && [ ! -f BUILD.bazel ]; then
   exit 0
 fi
 
-if [ -f Makefile ] &&
-  grep -q '^check:' Makefile 2>/dev/null &&
-  grep -qE 'bazel\b.*\btest\b' Makefile 2>/dev/null; then
+if [ -f Makefile ] \
+  && grep -q '^check:' Makefile 2>/dev/null \
+  && grep -qE 'bazel\b.*\btest\b' Makefile 2>/dev/null; then
   echo "Skipping standalone Bazel tests: Makefile has check target and mentions bazel test"
   exit 0
 fi
@@ -22,24 +22,10 @@ if ! command -v bazel &>/dev/null; then
   exit 0
 fi
 
-AFFECTED_TESTS_SCRIPT="${BAZEL_AFFECTED_TESTS_SCRIPT:-}"
-
-# Try common locations if not set
-if [ -z "$AFFECTED_TESTS_SCRIPT" ]; then
-  for candidate in \
-    "$HOME/go/src/github.com/jaeyeom/experimental/devtools/bazel_affected_tests.sh" \
-    "$HOME/bin/bazel_affected_tests.sh"; do
-    if [ -x "$candidate" ]; then
-      AFFECTED_TESTS_SCRIPT="$candidate"
-      break
-    fi
-  done
-fi
-
-if [ -n "$AFFECTED_TESTS_SCRIPT" ] && [ -x "$AFFECTED_TESTS_SCRIPT" ]; then
+if command -v bazel-affected-tests &>/dev/null; then
   echo "Finding affected tests..."
-  AFFECTED_TESTS=$("$AFFECTED_TESTS_SCRIPT" 2>/dev/null) || {
-    echo "Warning: affected tests script failed, falling back to full test" >&2
+  AFFECTED_TESTS=$(bazel-affected-tests 2>/dev/null) || {
+    echo "Warning: bazel-affected-tests failed, falling back to full test" >&2
     if ! bazel test --test_summary=terse //...:all; then
       echo >&2 "Bazel tests failed. Commit aborted."
       exit 1
@@ -53,7 +39,7 @@ if [ -n "$AFFECTED_TESTS_SCRIPT" ] && [ -x "$AFFECTED_TESTS_SCRIPT" ]; then
   fi
 
   echo "Running affected tests:"
-  while IFS= read -r t; do echo "  $t"; done <<< "$AFFECTED_TESTS"
+  while IFS= read -r t; do echo "  $t"; done <<<"$AFFECTED_TESTS"
 
   # Separate format tests from other tests
   FORMAT_TESTS=$(echo "$AFFECTED_TESTS" | grep "//tools/format:" || true)
@@ -80,7 +66,7 @@ if [ -n "$AFFECTED_TESTS_SCRIPT" ] && [ -x "$AFFECTED_TESTS_SCRIPT" ]; then
 
   echo "All affected tests passed."
 else
-  echo "Warning: bazel_affected_tests.sh not found, running all tests..." >&2
+  echo "Warning: bazel-affected-tests not found, running all tests..." >&2
   if ! bazel test --test_summary=terse //...:all; then
     echo >&2 "Bazel tests failed. Commit aborted."
     exit 1
