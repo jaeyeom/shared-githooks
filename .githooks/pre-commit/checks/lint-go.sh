@@ -9,9 +9,9 @@ if [ ! -f .golangci.yml ]; then
   exit 0
 fi
 
-if [ -f Makefile ] &&
-  grep -q '^check:' Makefile 2>/dev/null &&
-  grep -q 'golangci-lint' Makefile 2>/dev/null; then
+if [ -f Makefile ] \
+  && grep -q '^check:' Makefile 2>/dev/null \
+  && grep -q 'golangci-lint' Makefile 2>/dev/null; then
   echo "Skipping standalone Go lint: Makefile has check target and mentions golangci-lint"
   exit 0
 fi
