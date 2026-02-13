@@ -48,6 +48,7 @@ commit → pre-commit hooks (parallel) →
   ├── Go project without Makefile check? → golangci-lint
   ├── Bazel project without Makefile check? → affected tests
   ├── .org files staged? → org-lint
+  ├── Semgrep config present? → semgrep scan
   ├── Whitespace errors? → git diff --check
   └── Non-ASCII filenames? → reject (configurable)
 
@@ -96,6 +97,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | `check-non-ascii.sh` | Rejects non-ASCII filenames for portability | `git config hooks.allownonascii true` |
 | `lint-go.sh` | Runs `golangci-lint run ./...` | No `.golangci.yml`, tool not installed, or Makefile `check:` target mentions `golangci-lint` |
 | `lint-org.sh` | Runs `org-lint` on staged `.org` files | No staged `.org` files, tool not installed |
+| `lint-semgrep.sh` | Runs `semgrep scan` for static analysis | No `.semgrep.yml`, `.semgrep.yaml`, or `.semgrep/` directory; tool not installed; or Makefile `check:` target mentions `semgrep` |
 | `test-bazel.sh` | Runs affected Bazel tests via `bazel-affected-tests`, auto-fixes format tests | No `BUILD`/`BUILD.bazel` file, `bazel` not installed, or Makefile `check:` target mentions `bazel test` |
 
 ### Commit-msg Hooks (all run in parallel)
