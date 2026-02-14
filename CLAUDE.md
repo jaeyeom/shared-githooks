@@ -30,9 +30,18 @@ shared-githooks/
 │   ├── .envs.yaml           # Environment variables for hooks
 │   ├── .images.yaml         # Container image config (Docker/Podman)
 │   └── .lfs-required        # Marker: require Git LFS in consumers
+├── docs/                    # Project documentation (English)
+│   ├── getting-started.md   # Installation and setup guide
+│   ├── hooks-reference.md   # Detailed hook reference
+│   ├── configuration.md     # Advanced configuration options
+│   ├── development.md       # Contributing and development guide
+│   ├── ko/                  # Korean translations
+│   └── ja/                  # Japanese translations
 ├── .namespace               # Namespace identifier for this shared repo
 ├── CLAUDE.md                # This file
-└── README.md                # User-facing documentation
+├── README.md                # User-facing documentation (English)
+├── README.ko.md             # Korean README
+└── README.ja.md             # Japanese README
 ```
 
 ### Search Priority

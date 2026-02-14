@@ -2,6 +2,8 @@
 
 One set of Git hooks for all your repos.
 
+**[한국어](README.ko.md)** | **[日本語](README.ja.md)**
+
 ## Why
 
 When you work with [Claude Code](https://docs.anthropic.com/en/docs/claude-code), you're committing and pushing changes constantly. Without guardrails, a bad commit slips through — broken formatting, failing tests, lint violations — and you don't notice until CI fails or a reviewer catches it.
@@ -141,6 +143,17 @@ Or add patterns to `.githooks/.ignore.yaml`:
 patterns:
   - "pre-commit/checks/test-bazel.sh"
 ```
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Getting Started](docs/getting-started.md) | Installation, setup, version pinning |
+| [Hooks Reference](docs/hooks-reference.md) | Detailed behavior and conditions for all hooks |
+| [Configuration Guide](docs/configuration.md) | Namespaces, disabling hooks, environment variables, containers |
+| [Development Guide](docs/development.md) | Adding new hooks, coding conventions, testing |
+
+Translations: [한국어](docs/ko/) | [日本語](docs/ja/)
 
 ## Development
 
