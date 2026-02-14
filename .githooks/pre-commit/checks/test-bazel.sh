@@ -67,6 +67,7 @@ if command -v bazel-affected-tests &>/dev/null; then
   echo "All affected tests passed."
 else
   echo "Warning: bazel-affected-tests not found, running all tests..." >&2
+  echo "  Install it for faster incremental testing: https://github.com/jaeyeom/bazel-affected-tests" >&2
   if ! bazel test --test_summary=terse //...:all; then
     echo >&2 "Bazel tests failed. Commit aborted."
     exit 1

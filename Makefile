@@ -15,7 +15,7 @@ BIOME_FILES := $(shell find . -maxdepth 3 \( -name '*.md' -o -name '*.json' \) -
 all: format lint ## Full local workflow
 
 .PHONY: check
-check: check-format lint ## CI-friendly checks (no mutation)
+check: check-format lint test ## CI-friendly checks (no mutation)
 
 ##@ Format
 
@@ -77,6 +77,15 @@ lint-yaml: ## Lint YAML configs with yamllint
 	else \
 		echo "No YAML files found"; \
 	fi
+
+##@ Test
+
+.PHONY: test
+test: ## Run tests
+	@for t in tests/test-*.sh; do \
+		echo "=== $$t ==="; \
+		bash "$$t" || exit 1; \
+	done
 
 ##@ Helpers
 
