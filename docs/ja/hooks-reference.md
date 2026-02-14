@@ -7,7 +7,7 @@
 
 | Hookタイプ | スクリプト数 | 実行方式 |
 |-----------|------------|---------|
-| pre-commit | 6 | 並列（`checks/`ディレクトリ） |
+| pre-commit | 10 | 並列（`checks/`ディレクトリ） |
 | commit-msg | 3 | 並列（`checks/`ディレクトリ） |
 
 すべてのhookスクリプトは`set -euo pipefail`で始まり、依存ツールがない場合は
@@ -37,6 +37,25 @@
 
 ---
 
+### check-large-files.sh — 大容量ファイル検査
+
+ステージされたファイルがサイズ閾値を超えているかを検査します。
+
+**デフォルト制限：** 1 MB（1048576バイト）
+
+**設定方法：**
+
+```bash
+git config hooks.maxfilesize <bytes>
+```
+
+**動作方式：**
+- ステージされたすべてのファイル（Added/Changed/Modified）のサイズを確認
+- 閾値超過時にファイル名とサイズを表示し、コミットを中断
+- 常に実行（スキップ条件なし）
+
+---
+
 ### check-whitespace.sh — 空白エラー検査
 
 trailing whitespace、space-before-tabなどの空白関連エラーを検出します。
@@ -47,7 +66,7 @@ trailing whitespace、space-before-tabなどの空白関連エラーを検出し
 
 **除外ファイル拡張子：**
 - `.go` — gofmtが処理
-- `.py` — black/autopep8などが処理
+- `.py` — black/ruffなどが処理
 - `.proto` — clang-formatが処理
 - `.bzl`、`BUILD`、`BUILD.bazel`、`WORKSPACE` — buildifierが処理
 
@@ -85,6 +104,38 @@ Goプロジェクトで`golangci-lint`を実行します。
 
 ---
 
+### lint-python.sh — Pythonリント
+
+Pythonプロジェクトで`ruff check`と`ruff format --check`を実行します。
+
+**動作条件：**
+- `ruff.toml`、`.ruff.toml`、または`pyproject.toml`の`[tool.ruff]`セクションが存在
+- `ruff`コマンドがインストールされている
+
+**スキップ条件：**
+- ruff設定ファイルがない
+- `ruff`がインストールされていない（警告メッセージ出力）
+- Makefileの`check`ターゲットで既に`ruff`を実行している場合（重複防止）
+- Bazelプロジェクトで`@multitool//tools/ruff`でruffを管理している場合
+
+---
+
+### lint-shell.sh — シェルスクリプトリント
+
+ステージされた`.sh`ファイルに対して`shellcheck`を実行します。
+
+**動作条件：**
+- `shellcheck`コマンドがインストールされている
+- ステージされた`.sh`ファイルが存在（Added/Changed/Modified）
+
+**スキップ条件：**
+- `shellcheck`がインストールされていない（警告メッセージ出力）
+- ステージされた`.sh`ファイルがない
+- Makefileの`check`ターゲットで既に`shellcheck`を実行している場合
+  （重複防止）
+
+---
+
 ### lint-org.sh — Org-modeリント
 
 ステージされた`.org`ファイルに対して`org-lint`を実行します。
@@ -96,6 +147,22 @@ Goプロジェクトで`golangci-lint`を実行します。
 **スキップ条件：**
 - `org-lint`がインストールされていない（静かにスキップ）
 - ステージされた`.org`ファイルがない
+
+---
+
+### lint-semgrep.sh — Semgrep静的解析
+
+Semgrep設定があるプロジェクトで`semgrep scan`を実行します。
+
+**動作条件：**
+- `.semgrep.yml`、`.semgrep.yaml`、または`.semgrep/`ディレクトリが存在
+- `semgrep`コマンドがインストールされている
+
+**スキップ条件：**
+- Semgrep設定ファイル/ディレクトリがない
+- `semgrep`がインストールされていない（警告メッセージ出力）
+- Makefileの`check`ターゲットで既に`semgrep`を実行している場合
+  （重複防止）
 
 ---
 

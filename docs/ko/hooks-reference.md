@@ -7,7 +7,7 @@
 
 | Hook 타입 | 스크립트 수 | 실행 방식 |
 |-----------|------------|----------|
-| pre-commit | 6 | 병렬 (`checks/` 디렉토리) |
+| pre-commit | 10 | 병렬 (`checks/` 디렉토리) |
 | commit-msg | 3 | 병렬 (`checks/` 디렉토리) |
 
 모든 hook 스크립트는 `set -euo pipefail`로 시작하며, 의존 도구가 없을 경우
@@ -36,6 +36,25 @@
 
 ---
 
+### check-large-files.sh — 대용량 파일 검사
+
+스테이징된 파일이 크기 임계값을 초과하는지 검사합니다.
+
+**기본 제한:** 1 MB (1048576 바이트)
+
+**설정 방법:**
+
+```bash
+git config hooks.maxfilesize <bytes>
+```
+
+**동작 방식:**
+- 스테이징된 모든 파일(Added/Changed/Modified)의 크기를 확인
+- 임계값 초과 시 파일명과 크기를 표시하고 커밋을 중단
+- 항상 실행됨 (건너뛰는 조건 없음)
+
+---
+
 ### check-whitespace.sh — 공백 오류 검사
 
 trailing whitespace, space-before-tab 등 공백 관련 오류를 검출합니다.
@@ -46,7 +65,7 @@ trailing whitespace, space-before-tab 등 공백 관련 오류를 검출합니�
 
 **제외 파일 확장자:**
 - `.go` — gofmt가 처리
-- `.py` — black/autopep8 등이 처리
+- `.py` — black/ruff 등이 처리
 - `.proto` — clang-format이 처리
 - `.bzl`, `BUILD`, `BUILD.bazel`, `WORKSPACE` — buildifier가 처리
 
@@ -83,6 +102,37 @@ Go 프로젝트에서 `golangci-lint`를 실행합니다.
 
 ---
 
+### lint-python.sh — Python 린트
+
+Python 프로젝트에서 `ruff check`과 `ruff format --check`을 실행합니다.
+
+**동작 조건:**
+- `ruff.toml`, `.ruff.toml`, 또는 `pyproject.toml`에 `[tool.ruff]` 섹션이 존재
+- `ruff` 명령이 설치되어 있음
+
+**건너뛰는 조건:**
+- ruff 설정 파일이 없음
+- `ruff`가 설치되지 않음 (경고 메시지 출력)
+- Makefile의 `check` 타겟에서 이미 `ruff`를 실행하는 경우 (중복 방지)
+- Bazel 프로젝트에서 `@multitool//tools/ruff`로 ruff를 관리하는 경우
+
+---
+
+### lint-shell.sh — 셸 스크립트 린트
+
+스테이징된 `.sh` 파일에 대해 `shellcheck`를 실행합니다.
+
+**동작 조건:**
+- `shellcheck` 명령이 설치되어 있음
+- 스테이징된 `.sh` 파일이 존재 (Added/Changed/Modified)
+
+**건너뛰는 조건:**
+- `shellcheck`가 설치되지 않음 (경고 메시지 출력)
+- 스테이징된 `.sh` 파일이 없음
+- Makefile의 `check` 타겟에서 이미 `shellcheck`를 실행하는 경우 (중복 방지)
+
+---
+
 ### lint-org.sh — Org-mode 린트
 
 스테이징된 `.org` 파일에 대해 `org-lint`를 실행합니다.
@@ -94,6 +144,21 @@ Go 프로젝트에서 `golangci-lint`를 실행합니다.
 **건너뛰는 조건:**
 - `org-lint`가 설치되지 않음 (조용히 건너뜀)
 - 스테이징된 `.org` 파일이 없음
+
+---
+
+### lint-semgrep.sh — Semgrep 정적 분석
+
+Semgrep 설정이 있는 프로젝트에서 `semgrep scan`을 실행합니다.
+
+**동작 조건:**
+- `.semgrep.yml`, `.semgrep.yaml`, 또는 `.semgrep/` 디렉토리가 존재
+- `semgrep` 명령이 설치되어 있음
+
+**건너뛰는 조건:**
+- Semgrep 설정 파일/디렉토리가 없음
+- `semgrep`가 설치되지 않음 (경고 메시지 출력)
+- Makefile의 `check` 타겟에서 이미 `semgrep`를 실행하는 경우 (중복 방지)
 
 ---
 

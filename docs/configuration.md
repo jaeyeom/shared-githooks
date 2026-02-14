@@ -52,10 +52,14 @@ Some hooks can be controlled via Git config values:
 | Config | Default | Description |
 |--------|---------|-------------|
 | `hooks.allownonascii` | `false` | Set to `true` to allow non-ASCII filenames |
+| `hooks.maxfilesize` | `1048576` (1 MB) | Maximum file size in bytes for staged files |
 
 ```bash
 # Allow non-ASCII filenames
 git config hooks.allownonascii true
+
+# Set large file threshold to 5 MB
+git config hooks.maxfilesize 5242880
 ```
 
 ## Environment Variables Available to Hooks

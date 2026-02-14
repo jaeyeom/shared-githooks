@@ -7,7 +7,7 @@ conditions, and configuration options in shared-githooks.
 
 | Hook Type | Scripts | Execution |
 |-----------|---------|-----------|
-| pre-commit | 6 | Parallel (`checks/` directory) |
+| pre-commit | 10 | Parallel (`checks/` directory) |
 | commit-msg | 3 | Parallel (`checks/` directory) |
 
 All hook scripts start with `set -euo pipefail` and silently skip when
@@ -33,6 +33,25 @@ Runs `make -j check` if the project's Makefile has a `check` target.
 - No `check:` target defined
 
 **Command:** `make -j check` (parallel build)
+
+---
+
+### check-large-files.sh — Large File Detection
+
+Checks whether staged files exceed a size threshold.
+
+**Default limit:** 1 MB (1048576 bytes)
+
+**Configuration:**
+
+```bash
+git config hooks.maxfilesize <bytes>
+```
+
+**Behavior:**
+- Checks the size of all staged files (Added/Changed/Modified)
+- Displays filename and size when threshold is exceeded, and aborts the commit
+- Always runs (no skip conditions)
 
 ---
 
@@ -83,6 +102,37 @@ execution environment.
 
 ---
 
+### lint-python.sh — Python Lint
+
+Runs `ruff check` and `ruff format --check` on Python projects.
+
+**Activation conditions:**
+- `ruff.toml`, `.ruff.toml`, or a `[tool.ruff]` section in `pyproject.toml` exists
+- `ruff` is installed
+
+**Skip conditions:**
+- No ruff configuration file present
+- `ruff` is not installed (prints warning)
+- Makefile `check` target already runs `ruff` (deduplication)
+- Bazel project manages ruff via `@multitool//tools/ruff`
+
+---
+
+### lint-shell.sh — Shell Script Lint
+
+Runs `shellcheck` on staged `.sh` files.
+
+**Activation conditions:**
+- `shellcheck` is installed
+- Staged `.sh` files exist (Added/Changed/Modified)
+
+**Skip conditions:**
+- `shellcheck` is not installed (prints warning)
+- No staged `.sh` files
+- Makefile `check` target already runs `shellcheck` (deduplication)
+
+---
+
 ### lint-org.sh — Org-mode Lint
 
 Runs `org-lint` on staged `.org` files.
@@ -94,6 +144,21 @@ Runs `org-lint` on staged `.org` files.
 **Skip conditions:**
 - `org-lint` is not installed (silently skipped)
 - No staged `.org` files
+
+---
+
+### lint-semgrep.sh — Semgrep Static Analysis
+
+Runs `semgrep scan` on projects with Semgrep configuration.
+
+**Activation conditions:**
+- `.semgrep.yml`, `.semgrep.yaml`, or `.semgrep/` directory exists
+- `semgrep` is installed
+
+**Skip conditions:**
+- No Semgrep configuration file/directory present
+- `semgrep` is not installed (prints warning)
+- Makefile `check` target already runs `semgrep` (deduplication)
 
 ---
 
