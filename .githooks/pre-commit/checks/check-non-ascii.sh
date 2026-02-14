@@ -16,7 +16,7 @@ else
   against=$(git hash-object -t tree /dev/null)
 fi
 
-count=$(git diff --cached --name-only --diff-filter=A -z "$against" \
+count=$(git diff --cached --name-only --diff-filter=A -z "$against" -- \
   | LC_ALL=C tr -d '[ -~]\0' | wc -c)
 
 if [ "$count" -gt 0 ]; then
