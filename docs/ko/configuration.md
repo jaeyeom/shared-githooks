@@ -51,10 +51,18 @@ patterns:
 | 설정 | 기본값 | 설명 |
 |------|--------|-----|
 | `hooks.allownonascii` | `false` | `true`로 설정하면 비ASCII 파일명 허용 |
+| `hooks.i18nsync` | `false` | `true`로 설정하면 모든 언어 변형이 함께 스테이징되어야 함 |
+| `hooks.maxfilesize` | `1048576` (1 MB) | 스테이징된 파일의 최대 크기 (바이트) |
 
 ```bash
 # 비ASCII 파일명 허용
 git config hooks.allownonascii true
+
+# i18n 문서 동기화 검사 활성화
+git config hooks.i18nsync true
+
+# 대용량 파일 임계값을 5 MB로 설정
+git config hooks.maxfilesize 5242880
 ```
 
 ## hook에서 사용 가능한 환경변수

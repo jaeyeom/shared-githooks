@@ -100,6 +100,7 @@ test:
 | `check.sh` | `make -j check` 실행 (가능한 경우) | `check:` 타겟이 있는 Makefile 없음 |
 | `check-large-files.sh` | 크기 임계값 초과 스테이징 파일 거부 (기본 1 MB) | 항상 실행; `git config hooks.maxfilesize <bytes>`로 제한 설정 |
 | `check-whitespace.sh` | `git diff-index --check`로 trailing whitespace 및 혼합 줄 끝 검출 | 언어 포매터가 처리하는 파일 (*.go, *.py, *.proto, *.bzl, BUILD*) |
+| `check-i18n-sync.sh` | 문서 파일 변경 시 모든 언어 변형이 함께 스테이징되어야 함 | 옵트인: `git config hooks.i18nsync true`로 활성화 |
 | `check-non-ascii.sh` | 이식성을 위해 비ASCII 파일명 거부 | `git config hooks.allownonascii true` |
 | `lint-go.sh` | `golangci-lint run ./...` 실행 | `.golangci.yml` 없음, 도구 미설치, 또는 Makefile `check:` 타겟이 `golangci-lint` 언급 |
 | `lint-python.sh` | Python 프로젝트에서 `ruff check` 및 `ruff format --check` 실행 | ruff 설정 없음, 도구 미설치, Bazel이 `@multitool`로 ruff 관리, 또는 Makefile `check:` 타겟이 `ruff` 언급 |
@@ -121,6 +122,7 @@ test:
 | 설정 | 효과 |
 |------|------|
 | `git config hooks.allownonascii true` | 비ASCII 파일명 허용 |
+| `git config hooks.i18nsync true` | 문서 동기화 검사 활성화 (모든 언어 변형이 함께 스테이징되어야 함) |
 | `git config hooks.maxfilesize <bytes>` | 대용량 파일 임계값 설정 (기본: 1048576 = 1 MB) |
 | Makefile `check:` 타겟 | 존재 시 도구별 hooks를 대체 |
 | Makefile의 `.NOTPARALLEL` | 병렬 `make -j` 실행 비활성화 |

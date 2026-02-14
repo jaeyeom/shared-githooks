@@ -7,7 +7,7 @@ conditions, and configuration options in shared-githooks.
 
 | Hook Type | Scripts | Execution |
 |-----------|---------|-----------|
-| pre-commit | 10 | Parallel (`checks/` directory) |
+| pre-commit | 11 | Parallel (`checks/` directory) |
 | commit-msg | 3 | Parallel (`checks/` directory) |
 
 All hook scripts start with `set -euo pipefail` and silently skip when
@@ -68,6 +68,32 @@ Detects trailing whitespace, space-before-tab, and other whitespace errors.
 - `.py` — handled by black/autopep8, etc.
 - `.proto` — handled by clang-format
 - `.bzl`, `BUILD`, `BUILD.bazel`, `WORKSPACE` — handled by buildifier
+
+---
+
+### check-i18n-sync.sh — i18n Documentation Sync
+
+Ensures that when a multilingual documentation file is staged, all its
+language variants are staged together.
+
+**Opt-in:** This hook is disabled by default.
+
+```bash
+git config hooks.i18nsync true
+```
+
+**Language discovery:**
+- Languages are auto-discovered from tracked `README.<lang>.md` files
+- If no `README.<lang>.md` files exist, the hook does nothing
+
+**Tracked file groups:**
+- `README.md` ↔ `README.<lang>.md` (all variants must be staged together)
+- `docs/*.md` ↔ `docs/<lang>/*.md` (only enforced when translation counterparts exist)
+
+**Skip conditions:**
+- `hooks.i18nsync` is not set to `true` (default)
+- No `README.<lang>.md` files tracked in the repository
+- A `docs/` file has no translation counterparts
 
 ---
 

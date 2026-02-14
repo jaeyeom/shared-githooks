@@ -7,7 +7,7 @@
 
 | Hook 타입 | 스크립트 수 | 실행 방식 |
 |-----------|------------|----------|
-| pre-commit | 10 | 병렬 (`checks/` 디렉토리) |
+| pre-commit | 11 | 병렬 (`checks/` 디렉토리) |
 | commit-msg | 3 | 병렬 (`checks/` 디렉토리) |
 
 모든 hook 스크립트는 `set -euo pipefail`로 시작하며, 의존 도구가 없을 경우
@@ -68,6 +68,32 @@ trailing whitespace, space-before-tab 등 공백 관련 오류를 검출합니�
 - `.py` — black/ruff 등이 처리
 - `.proto` — clang-format이 처리
 - `.bzl`, `BUILD`, `BUILD.bazel`, `WORKSPACE` — buildifier가 처리
+
+---
+
+### check-i18n-sync.sh — i18n 문서 동기화
+
+다국어 문서 파일이 스테이징될 때 모든 언어 변형이 함께 스테이징되도록
+보장합니다.
+
+**옵트인:** 이 hook은 기본적으로 비활성화되어 있습니다.
+
+```bash
+git config hooks.i18nsync true
+```
+
+**언어 감지:**
+- 추적되는 `README.<lang>.md` 파일에서 언어를 자동 감지
+- `README.<lang>.md` 파일이 없으면 아무 작업도 하지 않음
+
+**추적 파일 그룹:**
+- `README.md` ↔ `README.<lang>.md` (모든 변형이 함께 스테이징되어야 함)
+- `docs/*.md` ↔ `docs/<lang>/*.md` (번역 대응 파일이 존재할 때만 적용)
+
+**건너뛰는 조건:**
+- `hooks.i18nsync`가 `true`로 설정되지 않음 (기본값)
+- 저장소에 `README.<lang>.md` 파일이 추적되지 않음
+- `docs/` 파일에 번역 대응 파일이 없음
 
 ---
 

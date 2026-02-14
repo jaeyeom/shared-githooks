@@ -7,7 +7,7 @@
 
 | Hookタイプ | スクリプト数 | 実行方式 |
 |-----------|------------|---------|
-| pre-commit | 10 | 並列（`checks/`ディレクトリ） |
+| pre-commit | 11 | 並列（`checks/`ディレクトリ） |
 | commit-msg | 3 | 並列（`checks/`ディレクトリ） |
 
 すべてのhookスクリプトは`set -euo pipefail`で始まり、依存ツールがない場合は
@@ -69,6 +69,32 @@ trailing whitespace、space-before-tabなどの空白関連エラーを検出し
 - `.py` — black/ruffなどが処理
 - `.proto` — clang-formatが処理
 - `.bzl`、`BUILD`、`BUILD.bazel`、`WORKSPACE` — buildifierが処理
+
+---
+
+### check-i18n-sync.sh — i18nドキュメント同期
+
+多言語ドキュメントファイルがステージされる際、すべての言語バリアントが
+一緒にステージされることを保証します。
+
+**オプトイン：** このhookはデフォルトで無効です。
+
+```bash
+git config hooks.i18nsync true
+```
+
+**言語検出：**
+- 追跡されている`README.<lang>.md`ファイルから言語を自動検出
+- `README.<lang>.md`ファイルがなければ何もしない
+
+**追跡ファイルグループ：**
+- `README.md` ↔ `README.<lang>.md`（すべてのバリアントを一緒にステージする必要あり）
+- `docs/*.md` ↔ `docs/<lang>/*.md`（翻訳対応ファイルが存在する場合のみ適用）
+
+**スキップ条件：**
+- `hooks.i18nsync`が`true`に設定されていない（デフォルト）
+- リポジトリに`README.<lang>.md`ファイルが追跡されていない
+- `docs/`ファイルに翻訳対応ファイルがない
 
 ---
 

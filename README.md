@@ -100,6 +100,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | `check.sh` | Runs `make -j check` if available | No Makefile with `check:` target |
 | `check-large-files.sh` | Rejects staged files exceeding a size threshold (default 1 MB) | Never (always runs); configure limit with `git config hooks.maxfilesize <bytes>` |
 | `check-whitespace.sh` | Detects trailing whitespace and mixed line endings via `git diff-index --check` | Files handled by language formatters (*.go, *.py, *.proto, *.bzl, BUILD*) |
+| `check-i18n-sync.sh` | Requires all language variants of a doc file to be staged together | Opt-in: enable with `git config hooks.i18nsync true` |
 | `check-non-ascii.sh` | Rejects non-ASCII filenames for portability | `git config hooks.allownonascii true` |
 | `lint-go.sh` | Runs `golangci-lint run ./...` | No `.golangci.yml`, tool not installed, or Makefile `check:` target mentions `golangci-lint` |
 | `lint-python.sh` | Runs `ruff check` and `ruff format --check` on Python projects | No ruff config, tool not installed, Bazel manages ruff via `@multitool`, or Makefile `check:` target mentions `ruff` |
@@ -121,6 +122,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | Setting | Effect |
 |---------|--------|
 | `git config hooks.allownonascii true` | Allow non-ASCII filenames |
+| `git config hooks.i18nsync true` | Enable documentation sync check (requires all language variants staged together) |
 | `git config hooks.maxfilesize <bytes>` | Set large file threshold (default: 1048576 = 1 MB) |
 | Makefile `check:` target | Overrides tool-specific hooks when present |
 | `.NOTPARALLEL` in Makefile | Disables parallel `make -j` execution |

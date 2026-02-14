@@ -100,6 +100,7 @@ test:
 | `check.sh` | `make -j check`を実行（可能な場合） | `check:`ターゲットのあるMakefileなし |
 | `check-large-files.sh` | サイズ閾値を超えるステージファイルを拒否（デフォルト1 MB） | 常に実行；`git config hooks.maxfilesize <bytes>`で制限設定 |
 | `check-whitespace.sh` | `git diff-index --check`でtrailing whitespaceと混合改行を検出 | 言語フォーマッターが処理するファイル（*.go、*.py、*.proto、*.bzl、BUILD*） |
+| `check-i18n-sync.sh` | ドキュメントファイル変更時にすべての言語バリアントのステージが必要 | オプトイン：`git config hooks.i18nsync true`で有効化 |
 | `check-non-ascii.sh` | 移植性のため非ASCIIファイル名を拒否 | `git config hooks.allownonascii true` |
 | `lint-go.sh` | `golangci-lint run ./...`を実行 | `.golangci.yml`なし、ツール未インストール、またはMakefile `check:`ターゲットが`golangci-lint`に言及 |
 | `lint-python.sh` | Pythonプロジェクトで`ruff check`と`ruff format --check`を実行 | ruff設定なし、ツール未インストール、Bazelが`@multitool`でruffを管理、またはMakefile `check:`ターゲットが`ruff`に言及 |
@@ -121,6 +122,7 @@ test:
 | 設定 | 効果 |
 |------|------|
 | `git config hooks.allownonascii true` | 非ASCIIファイル名を許可 |
+| `git config hooks.i18nsync true` | ドキュメント同期チェックを有効化（すべての言語バリアントのステージが必要） |
 | `git config hooks.maxfilesize <bytes>` | 大容量ファイル閾値を設定（デフォルト：1048576 = 1 MB） |
 | Makefile `check:`ターゲット | 存在時にツール固有のhooksを代替 |
 | Makefileの`.NOTPARALLEL` | 並列`make -j`実行を無効化 |
