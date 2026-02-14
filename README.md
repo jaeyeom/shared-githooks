@@ -46,9 +46,12 @@ When you commit, hooks run in parallel following this logic:
 commit → pre-commit hooks (parallel) →
   ├── Makefile with check: target? → make -j check (covers everything)
   ├── Go project without Makefile check? → golangci-lint
+  ├── Python project without Makefile check? → ruff check + format
+  ├── Shell scripts staged? → shellcheck
   ├── Bazel project without Makefile check? → affected tests
   ├── .org files staged? → org-lint
   ├── Semgrep config present? → semgrep scan
+  ├── Large files staged? → reject (configurable limit)
   ├── Whitespace errors? → git diff --check
   └── Non-ASCII filenames? → reject (configurable)
 
@@ -93,9 +96,12 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | Hook | What It Does | Skip Conditions |
 |------|--------------|-----------------|
 | `check.sh` | Runs `make -j check` if available | No Makefile with `check:` target |
+| `check-large-files.sh` | Rejects staged files exceeding a size threshold (default 1 MB) | Never (always runs); configure limit with `git config hooks.maxfilesize <bytes>` |
 | `check-whitespace.sh` | Detects trailing whitespace and mixed line endings via `git diff-index --check` | Files handled by language formatters (*.go, *.py, *.proto, *.bzl, BUILD*) |
 | `check-non-ascii.sh` | Rejects non-ASCII filenames for portability | `git config hooks.allownonascii true` |
 | `lint-go.sh` | Runs `golangci-lint run ./...` | No `.golangci.yml`, tool not installed, or Makefile `check:` target mentions `golangci-lint` |
+| `lint-python.sh` | Runs `ruff check` and `ruff format --check` on Python projects | No ruff config, tool not installed, Bazel manages ruff via `@multitool`, or Makefile `check:` target mentions `ruff` |
+| `lint-shell.sh` | Runs `shellcheck` on staged `.sh` files | No staged `.sh` files, tool not installed, or Makefile `check:` target mentions `shellcheck` |
 | `lint-org.sh` | Runs `org-lint` on staged `.org` files | No staged `.org` files, tool not installed |
 | `lint-semgrep.sh` | Runs `semgrep scan` for static analysis | No `.semgrep.yml`, `.semgrep.yaml`, or `.semgrep/` directory; tool not installed; or Makefile `check:` target mentions `semgrep` |
 | `test-bazel.sh` | Runs affected Bazel tests via `bazel-affected-tests`, auto-fixes format tests | No `BUILD`/`BUILD.bazel` file, `bazel` not installed, or Makefile `check:` target mentions `bazel test` |
@@ -113,6 +119,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | Setting | Effect |
 |---------|--------|
 | `git config hooks.allownonascii true` | Allow non-ASCII filenames |
+| `git config hooks.maxfilesize <bytes>` | Set large file threshold (default: 1048576 = 1 MB) |
 | Makefile `check:` target | Overrides tool-specific hooks when present |
 | `.NOTPARALLEL` in Makefile | Disables parallel `make -j` execution |
 
