@@ -6,9 +6,14 @@
 
 set -euo pipefail
 
-if [ ! -f .semgrep.yml ] \
-  && [ ! -f .semgrep.yaml ] \
-  && [ ! -d .semgrep ]; then
+config=""
+if [ -f .semgrep.yml ]; then
+  config=".semgrep.yml"
+elif [ -f .semgrep.yaml ]; then
+  config=".semgrep.yaml"
+elif [ -d .semgrep ]; then
+  config=".semgrep/"
+else
   exit 0
 fi
 
@@ -25,7 +30,7 @@ if ! command -v semgrep &>/dev/null; then
 fi
 
 echo "Running semgrep scan..."
-if ! semgrep scan --error --quiet .; then
+if ! semgrep scan --config "$config" --error --quiet .; then
   echo >&2 "Semgrep scan found issues. Commit aborted."
   exit 1
 fi
