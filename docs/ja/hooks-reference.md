@@ -63,12 +63,32 @@ trailing whitespace、space-before-tabなどの空白関連エラーを検出し
 **動作方式：**
 - `git diff-index --check --cached`を使用してステージされた変更を検査
 - 言語別フォーマッターが処理するファイルは除外
+- `.gitattributes`で`binary`、`-text`、`eol=crlf`と指定されたファイルも除外
 
 **除外ファイル拡張子：**
 - `.go` — gofmtが処理
 - `.py` — black/ruffなどが処理
 - `.proto` — clang-formatが処理
 - `.bzl`、`BUILD`、`BUILD.bazel`、`WORKSPACE` — buildifierが処理
+
+**`.gitattributes`によるファイル単位の除外：**
+
+改行コードや末尾空白をそのまま保持する必要があるファイル（HTTPフィクスチャ、
+ゴールデンテストデータ、Windowsバッチスクリプトなど）の検査をスキップする
+には、`.gitattributes`で指定します：
+
+```gitattributes
+# HTTPリクエスト/レスポンスフィクスチャはCRLF改行が必要
+*.http        text eol=crlf
+testdata/**   text eol=crlf
+
+# バイナリブロブはテキスト検査の対象外
+*.png         binary
+*.bin         -text
+```
+
+`binary`、`-text`、`eol=crlf`のいずれかに一致するファイルはこのフックで
+スキップされます。
 
 ---
 

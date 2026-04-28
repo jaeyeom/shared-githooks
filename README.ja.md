@@ -99,7 +99,7 @@ test:
 |------|------|-------------|
 | `check.sh` | `make -j check`を実行（可能な場合） | `check:`ターゲットのあるMakefileなし |
 | `check-large-files.sh` | サイズ閾値を超えるステージファイルを拒否（デフォルト1 MB） | 常に実行；`git config hooks.maxfilesize <bytes>`で制限設定 |
-| `check-whitespace.sh` | `git diff-index --check`でtrailing whitespaceと混合改行を検出 | 言語フォーマッターが処理するファイル（*.go、*.py、*.proto、*.bzl、BUILD*） |
+| `check-whitespace.sh` | `git diff-index --check`でtrailing whitespaceと混合改行を検出 | 言語フォーマッターが処理するファイル（*.go、*.py、*.proto、*.bzl、BUILD*）、または`.gitattributes`で`binary` / `-text` / `eol=crlf`と指定されたファイル |
 | `check-i18n-sync.sh` | ドキュメントファイル変更時にすべての言語バリアントのステージが必要 | オプトイン：`git config hooks.i18nsync true`で有効化 |
 | `check-non-ascii.sh` | 移植性のため非ASCIIファイル名を拒否 | `git config hooks.allownonascii true` |
 | `lint-go.sh` | `golangci-lint run ./...`を実行 | `.golangci.yml`なし、ツール未インストール、またはMakefile `check:`ターゲットが`golangci-lint`に言及 |

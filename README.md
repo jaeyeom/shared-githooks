@@ -99,7 +99,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 |------|--------------|-----------------|
 | `check.sh` | Runs `make -j check` if available | No Makefile with `check:` target |
 | `check-large-files.sh` | Rejects staged files exceeding a size threshold (default 1 MB) | Never (always runs); configure limit with `git config hooks.maxfilesize <bytes>` |
-| `check-whitespace.sh` | Detects trailing whitespace and mixed line endings via `git diff-index --check` | Files handled by language formatters (*.go, *.py, *.proto, *.bzl, BUILD*) |
+| `check-whitespace.sh` | Detects trailing whitespace and mixed line endings via `git diff-index --check` | Files handled by language formatters (*.go, *.py, *.proto, *.bzl, BUILD*) or marked `binary` / `-text` / `eol=crlf` in `.gitattributes` |
 | `check-i18n-sync.sh` | Requires all language variants of a doc file to be staged together | Opt-in: enable with `git config hooks.i18nsync true` |
 | `check-non-ascii.sh` | Rejects non-ASCII filenames for portability | `git config hooks.allownonascii true` |
 | `lint-go.sh` | Runs `golangci-lint run ./...` | No `.golangci.yml`, tool not installed, or Makefile `check:` target mentions `golangci-lint` |

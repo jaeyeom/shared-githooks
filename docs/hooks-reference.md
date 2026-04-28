@@ -62,12 +62,31 @@ Detects trailing whitespace, space-before-tab, and other whitespace errors.
 **Behavior:**
 - Uses `git diff-index --check --cached` to inspect staged changes
 - Excludes files handled by language-specific formatters
+- Excludes files marked `binary`, `-text`, or `eol=crlf` in `.gitattributes`
 
 **Excluded file extensions:**
 - `.go` — handled by gofmt
 - `.py` — handled by black/autopep8, etc.
 - `.proto` — handled by clang-format
 - `.bzl`, `BUILD`, `BUILD.bazel`, `WORKSPACE` — handled by buildifier
+
+**Per-file exclusion via `.gitattributes`:**
+
+To skip whitespace checks for files that legitimately need preserved line
+endings or trailing whitespace (HTTP fixtures, golden test data, Windows
+batch scripts, etc.), mark them in `.gitattributes`:
+
+```gitattributes
+# HTTP request/response fixtures need CRLF line endings
+*.http        text eol=crlf
+testdata/**   text eol=crlf
+
+# Binary blobs are not text-checked at all
+*.png         binary
+*.bin         -text
+```
+
+Any file matching `binary`, `-text`, or `eol=crlf` is skipped by this hook.
 
 ---
 
