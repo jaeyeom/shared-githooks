@@ -7,7 +7,7 @@
 
 | Hookタイプ | スクリプト数 | 実行方式 |
 |-----------|------------|---------|
-| pre-commit | 11 | 並列（`checks/`ディレクトリ） |
+| pre-commit | 12 | 並列（`checks/`ディレクトリ） |
 | commit-msg | 3 | 並列（`checks/`ディレクトリ） |
 
 すべてのhookスクリプトは`set -euo pipefail`で始まり、依存ツールがない場合は
@@ -238,6 +238,66 @@ Bazelプロジェクトで変更の影響を受けるテストを実行します
 
 **プラットフォーム制限：**
 - macOS（Darwin）ではフォーマットテスト以外のテストをスキップ
+
+---
+
+### check-workflow-actions.sh — 古いGitHub Actionsの検出
+
+ステージされた`.github/workflows/*.yml`/`*.yaml`ファイルで、既知のアクションが
+ハードコードされた最小メジャーバージョン未満である場合、または
+`golangci/golangci-lint-action`の`version:`入力で`golangci-lint v1`が
+ピン留めされている場合、コミットを拒否します。新しく生成された
+ワークフローはしばしば古いタグ（`@v3`、`version: v1.x`）にデフォルト
+設定されますが、このhookがコミット時に検出します。
+
+**デフォルトで有効。** 無効化方法：
+
+```bash
+git config hooks.checkactions false
+```
+
+**動作条件：**
+- ステージされたファイルに`.github/workflows/*.{yml,yaml}`が1つ以上存在
+
+**スキップ条件：**
+- ステージされたワークフローファイルがない
+- `hooks.checkactions`が`false`に設定されている
+- `uses:`参照がSHA（`@abc123...`）またはブランチ（`@main`）でピン留めされている
+- 最小バージョン表にないアクション（未知のアクションは無視）
+
+**強制される最小メジャーバージョン：**
+
+| アクション | 最小 |
+|-----------|------|
+| `actions/checkout` | v4 |
+| `actions/setup-go` | v5 |
+| `actions/setup-node` | v4 |
+| `actions/setup-python` | v5 |
+| `actions/setup-java` | v4 |
+| `actions/setup-dotnet` | v4 |
+| `actions/cache` | v4 |
+| `actions/upload-artifact` | v4 |
+| `actions/download-artifact` | v4 |
+| `actions/configure-pages` | v5 |
+| `actions/deploy-pages` | v4 |
+| `actions/upload-pages-artifact` | v3 |
+| `golangci/golangci-lint-action` | v6 |
+| `docker/build-push-action` | v6 |
+| `docker/login-action` | v3 |
+| `docker/setup-buildx-action` | v3 |
+| `docker/setup-qemu-action` | v3 |
+| `docker/metadata-action` | v5 |
+| `codecov/codecov-action` | v4 |
+| `softprops/action-gh-release` | v2 |
+| `github/codeql-action` | v3 |
+
+**golangci-lintバイナリバージョン：** `golangci/golangci-lint-action`
+ステップ内部の`version:`入力はv2以上に解決される必要があります。
+golangci-lint v2が互換性を破る設定変更を導入したため、v1.xのピン留めは
+拒否されます。
+
+最小バージョンを引き上げるには、`check-workflow-actions.sh`の`MIN_MAJOR`
+を編集してください。
 
 ---
 

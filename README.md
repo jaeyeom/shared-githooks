@@ -55,7 +55,8 @@ commit → pre-commit hooks (parallel) →
   ├── Semgrep config present? → semgrep scan
   ├── Large files staged? → reject (configurable limit)
   ├── Whitespace errors? → git diff --check
-  └── Non-ASCII filenames? → reject (configurable)
+  ├── Non-ASCII filenames? → reject (configurable)
+  └── Outdated GitHub Actions in workflows? → reject (configurable)
 
 commit-msg hooks (parallel) →
   ├── Subject line >72 chars? → reject
@@ -108,6 +109,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | `lint-org.sh` | Runs `org-lint` on staged `.org` files | No staged `.org` files, tool not installed |
 | `lint-semgrep.sh` | Runs `semgrep scan` for static analysis | No `.semgrep.yml`, `.semgrep.yaml`, or `.semgrep/` directory; tool not installed; or Makefile `check:` target mentions `semgrep` |
 | `test-bazel.sh` | Runs affected Bazel tests via `bazel-affected-tests`, auto-fixes format tests | No `BUILD`/`BUILD.bazel` file, `bazel` not installed, or Makefile `check:` target mentions `bazel test` |
+| `check-workflow-actions.sh` | Rejects staged `.github/workflows/*.yml` that pin known actions below a minimum major version (e.g. `actions/checkout@v3`), or pin golangci-lint v1 via `golangci-lint-action` | No staged workflow files, or `git config hooks.checkactions false` |
 
 ### Commit-msg Hooks (all run in parallel)
 
@@ -124,6 +126,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | `git config hooks.allownonascii true` | Allow non-ASCII filenames |
 | `git config hooks.i18nsync true` | Enable documentation sync check (requires all language variants staged together) |
 | `git config hooks.maxfilesize <bytes>` | Set large file threshold (default: 1048576 = 1 MB) |
+| `git config hooks.checkactions false` | Disable the outdated GitHub Actions check (enabled by default) |
 | Makefile `check:` target | Overrides tool-specific hooks when present |
 | `.NOTPARALLEL` in Makefile | Disables parallel `make -j` execution |
 

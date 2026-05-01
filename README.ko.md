@@ -55,7 +55,8 @@ commit → pre-commit hooks (병렬) →
   ├── Semgrep 설정 존재? → semgrep scan
   ├── 대용량 파일 스테이징? → 거부 (설정 가능한 제한)
   ├── 공백 오류? → git diff --check
-  └── 비ASCII 파일명? → 거부 (설정 가능)
+  ├── 비ASCII 파일명? → 거부 (설정 가능)
+  └── 워크플로의 오래된 GitHub Actions? → 거부 (설정 가능)
 
 commit-msg hooks (병렬) →
   ├── 제목 줄 >72자? → 거부
@@ -108,6 +109,7 @@ test:
 | `lint-org.sh` | 스테이징된 `.org` 파일에 `org-lint` 실행 | 스테이징된 `.org` 파일 없음, 도구 미설치 |
 | `lint-semgrep.sh` | 정적 분석을 위한 `semgrep scan` 실행 | `.semgrep.yml`, `.semgrep.yaml`, `.semgrep/` 디렉토리 없음; 도구 미설치; 또는 Makefile `check:` 타겟이 `semgrep` 언급 |
 | `test-bazel.sh` | `bazel-affected-tests`로 영향받는 Bazel 테스트 실행, 포맷 테스트 자동 수정 | `BUILD`/`BUILD.bazel` 파일 없음, `bazel` 미설치, 또는 Makefile `check:` 타겟이 `bazel test` 언급 |
+| `check-workflow-actions.sh` | 스테이징된 `.github/workflows/*.yml`에서 알려진 액션의 메이저 버전이 최소치 미만이거나(`actions/checkout@v3` 등) `golangci-lint-action`이 golangci-lint v1을 고정하면 거부 | 스테이징된 워크플로 파일 없음, 또는 `git config hooks.checkactions false` |
 
 ### Commit-msg Hooks (모두 병렬 실행)
 
@@ -124,6 +126,7 @@ test:
 | `git config hooks.allownonascii true` | 비ASCII 파일명 허용 |
 | `git config hooks.i18nsync true` | 문서 동기화 검사 활성화 (모든 언어 변형이 함께 스테이징되어야 함) |
 | `git config hooks.maxfilesize <bytes>` | 대용량 파일 임계값 설정 (기본: 1048576 = 1 MB) |
+| `git config hooks.checkactions false` | 오래된 GitHub Actions 검사 비활성화 (기본 활성화) |
 | Makefile `check:` 타겟 | 존재 시 도구별 hooks를 대체 |
 | Makefile의 `.NOTPARALLEL` | 병렬 `make -j` 실행 비활성화 |
 
