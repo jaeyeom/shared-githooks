@@ -7,7 +7,9 @@ SHELL := /bin/bash
 
 SHELL_FILES := $(shell find .githooks -type f -name '*.sh' 2>/dev/null)
 YAML_FILES  := $(shell find .githooks -type f \( -name '*.yaml' -o -name '*.yml' \) 2>/dev/null)
-BIOME_FILES := $(shell find . -maxdepth 3 \( -name '*.md' -o -name '*.json' \) -not -path './.omc/*' -not -path './.git/*' -not -path './.claude/*' 2>/dev/null)
+# Use git to enumerate files so .gitignore'd tool state (.omc/, .omx/, etc.)
+# is skipped automatically. .claude/ is not gitignored, so exclude it here.
+BIOME_FILES := $(shell git ls-files --cached --others --exclude-standard -- '*.md' '*.json' 2>/dev/null | grep -v '^\.claude/')
 
 ##@ Main targets
 
