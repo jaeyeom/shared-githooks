@@ -329,8 +329,9 @@ top level of `.githooks/post-checkout/` and executed **sequentially**.
 
 Seeds untracked/gitignored personal files (`.env`, `.bazelrc.user`, …) into a
 newly created linked worktree, by copying or symlinking them from the main
-working tree. Driven by a manifest so it only touches files you explicitly
-opt in to — never build outputs, caches, or secrets.
+working tree. Driven by a manifest so it only seeds what you list, instead of
+blindly sweeping in every gitignored file (build outputs, caches, secrets, and
+the like).
 
 **Default size cap:** 1 MB (1048576 bytes)
 

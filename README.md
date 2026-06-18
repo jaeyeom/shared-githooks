@@ -127,7 +127,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 
 ## Seeding New Worktrees
 
-When you run `git worktree add`, untracked files don't come along — that's how Git works. Personal config that lives outside version control (`.env`, `.env.local`, `.bazelrc.user`, …) would have to be recreated by hand in every worktree. The `seed-worktree.sh` post-checkout hook does it for you, scoped by a small manifest so it only touches files you explicitly list (never build outputs, caches, or secrets).
+When you run `git worktree add`, untracked files don't come along — that's how Git works. Personal config that lives outside version control (`.env`, `.env.local`, `.bazelrc.user`, …) would have to be recreated by hand in every worktree. The `seed-worktree.sh` post-checkout hook does it for you, scoped by a small manifest so it only seeds what you list, instead of blindly sweeping in every gitignored file (build outputs, caches, secrets, and the like).
 
 ### Manifest format
 

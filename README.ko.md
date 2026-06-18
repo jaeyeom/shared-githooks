@@ -127,7 +127,7 @@ test:
 
 ## 새 Worktree 시딩
 
-`git worktree add`를 실행하면 추적되지 않는 파일은 함께 오지 않습니다 — Git의 동작 방식입니다. 버전 관리 밖에 있는 개인 설정(`.env`, `.env.local`, `.bazelrc.user` 등)을 worktree마다 손으로 다시 만들어야 합니다. `seed-worktree.sh` post-checkout hook이 이를 대신 처리하며, 작은 매니페스트로 범위를 한정해 명시적으로 나열한 파일만 다룹니다(빌드 산출물, 캐시, 시크릿은 절대 다루지 않음).
+`git worktree add`를 실행하면 추적되지 않는 파일은 함께 오지 않습니다 — Git의 동작 방식입니다. 버전 관리 밖에 있는 개인 설정(`.env`, `.env.local`, `.bazelrc.user` 등)을 worktree마다 손으로 다시 만들어야 합니다. `seed-worktree.sh` post-checkout hook이 이를 대신 처리하며, 작은 매니페스트로 범위를 한정해 나열한 파일만 시딩하고 gitignore된 모든 파일(빌드 산출물, 캐시, 시크릿 등)을 무턱대고 쓸어 담지 않습니다.
 
 ### 매니페스트 형식
 

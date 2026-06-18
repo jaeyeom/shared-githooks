@@ -127,7 +127,7 @@ test:
 
 ## 新しいWorktreeのシード
 
-`git worktree add`を実行しても追跡されていないファイルは付いてきません — これがGitの仕組みです。バージョン管理外の個人設定（`.env`、`.env.local`、`.bazelrc.user` など）をworktreeごとに手で作り直す必要があります。`seed-worktree.sh` post-checkout hookがこれを代行し、小さなマニフェストで範囲を限定して、明示的に列挙したファイルのみを扱います（ビルド成果物、キャッシュ、シークレットは決して扱いません）。
+`git worktree add`を実行しても追跡されていないファイルは付いてきません — これがGitの仕組みです。バージョン管理外の個人設定（`.env`、`.env.local`、`.bazelrc.user` など）をworktreeごとに手で作り直す必要があります。`seed-worktree.sh` post-checkout hookがこれを代行し、小さなマニフェストで範囲を限定して、列挙したファイルのみをシードし、gitignoreされたすべてのファイル（ビルド成果物、キャッシュ、シークレットなど）を無闇に取り込むことはありません。
 
 ### マニフェスト形式
 
