@@ -54,6 +54,7 @@ Some hooks can be controlled via Git config values:
 | `hooks.allownonascii` | `false` | Set to `true` to allow non-ASCII filenames |
 | `hooks.i18nsync` | `false` | Set to `true` to require all language variants staged together |
 | `hooks.maxfilesize` | `1048576` (1 MB) | Maximum file size in bytes for staged files |
+| `hooks.checkactions` | `true` | Set to `false` to disable the outdated GitHub Actions check for `.github/workflows/` files |
 
 ```bash
 # Allow non-ASCII filenames
@@ -64,6 +65,9 @@ git config hooks.i18nsync true
 
 # Set large file threshold to 5 MB
 git config hooks.maxfilesize 5242880
+
+# Disable the outdated GitHub Actions check
+git config hooks.checkactions false
 ```
 
 ## Environment Variables Available to Hooks

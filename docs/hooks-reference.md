@@ -7,7 +7,7 @@ conditions, and configuration options in shared-githooks.
 
 | Hook Type | Scripts | Execution |
 |-----------|---------|-----------|
-| pre-commit | 11 | Parallel (`checks/` directory) |
+| pre-commit | 12 | Parallel (`checks/` directory) |
 | commit-msg | 3 | Parallel (`checks/` directory) |
 
 All hook scripts start with `set -euo pipefail` and silently skip when
@@ -231,6 +231,63 @@ Runs tests affected by changes in Bazel projects.
 
 **Platform limitation:**
 - On macOS (Darwin), non-format tests are skipped
+
+---
+
+### check-workflow-actions.sh — Outdated GitHub Actions Detection
+
+Rejects staged `.github/workflows/*.yml`/`*.yaml` files that pin known
+actions below a hardcoded minimum major version, or that pin
+`golangci-lint v1` via the `golangci/golangci-lint-action` `version:` input.
+Freshly generated workflows often default to outdated tags (`@v3`,
+`version: v1.x`); this hook catches them at commit time.
+
+**Enabled by default.** Disable with:
+
+```bash
+git config hooks.checkactions false
+```
+
+**Activation conditions:**
+- At least one staged file matches `.github/workflows/*.{yml,yaml}`
+
+**Skip conditions:**
+- No staged workflow files
+- `hooks.checkactions` is set to `false`
+- The `uses:` reference is SHA-pinned (`@abc123...`) or branch-pinned (`@main`)
+- The action is not in the minimum-version table (unknown actions are ignored)
+
+**Minimum major versions enforced:**
+
+| Action | Minimum |
+|--------|---------|
+| `actions/checkout` | v4 |
+| `actions/setup-go` | v5 |
+| `actions/setup-node` | v4 |
+| `actions/setup-python` | v5 |
+| `actions/setup-java` | v4 |
+| `actions/setup-dotnet` | v4 |
+| `actions/cache` | v4 |
+| `actions/upload-artifact` | v4 |
+| `actions/download-artifact` | v4 |
+| `actions/configure-pages` | v5 |
+| `actions/deploy-pages` | v4 |
+| `actions/upload-pages-artifact` | v3 |
+| `golangci/golangci-lint-action` | v6 |
+| `docker/build-push-action` | v6 |
+| `docker/login-action` | v3 |
+| `docker/setup-buildx-action` | v3 |
+| `docker/setup-qemu-action` | v3 |
+| `docker/metadata-action` | v5 |
+| `codecov/codecov-action` | v4 |
+| `softprops/action-gh-release` | v2 |
+| `github/codeql-action` | v3 |
+
+**golangci-lint binary version:** Inside a `golangci/golangci-lint-action`
+step, the `version:` input must resolve to v2 or higher. Pinning v1.x is
+rejected because golangci-lint v2 introduced breaking config changes.
+
+To bump the minimum versions, edit `MIN_MAJOR` in `check-workflow-actions.sh`.
 
 ---
 

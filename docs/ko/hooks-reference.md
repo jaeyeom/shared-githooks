@@ -7,7 +7,7 @@
 
 | Hook 타입 | 스크립트 수 | 실행 방식 |
 |-----------|------------|----------|
-| pre-commit | 11 | 병렬 (`checks/` 디렉토리) |
+| pre-commit | 12 | 병렬 (`checks/` 디렉토리) |
 | commit-msg | 3 | 병렬 (`checks/` 디렉토리) |
 
 모든 hook 스크립트는 `set -euo pipefail`로 시작하며, 의존 도구가 없을 경우
@@ -231,6 +231,63 @@ Bazel 프로젝트에서 변경에 영향받는 테스트를 실행합니다.
 
 **플랫폼 제한:**
 - macOS(Darwin)에서는 포맷 테스트 외의 테스트를 건너뜀
+
+---
+
+### check-workflow-actions.sh — 오래된 GitHub Actions 검출
+
+스테이징된 `.github/workflows/*.yml`/`*.yaml` 파일에서 알려진 액션이
+하드코딩된 최소 메이저 버전보다 낮은 경우, 또는 `golangci/golangci-lint-action`이
+`version:` 입력으로 `golangci-lint v1`을 고정한 경우 커밋을 거부합니다.
+새로 생성된 워크플로는 종종 오래된 태그(`@v3`, `version: v1.x`)로 기본
+설정되는데, 이 hook이 커밋 시점에 잡아냅니다.
+
+**기본 활성화.** 비활성화 방법:
+
+```bash
+git config hooks.checkactions false
+```
+
+**동작 조건:**
+- 스테이징된 파일 중 `.github/workflows/*.{yml,yaml}`이 하나 이상 존재
+
+**건너뛰는 조건:**
+- 스테이징된 워크플로 파일이 없음
+- `hooks.checkactions`가 `false`로 설정됨
+- `uses:` 참조가 SHA(`@abc123...`) 또는 브랜치(`@main`)로 고정됨
+- 최소 버전 표에 없는 액션 (알려지지 않은 액션은 무시)
+
+**강제되는 최소 메이저 버전:**
+
+| 액션 | 최소 |
+|------|------|
+| `actions/checkout` | v4 |
+| `actions/setup-go` | v5 |
+| `actions/setup-node` | v4 |
+| `actions/setup-python` | v5 |
+| `actions/setup-java` | v4 |
+| `actions/setup-dotnet` | v4 |
+| `actions/cache` | v4 |
+| `actions/upload-artifact` | v4 |
+| `actions/download-artifact` | v4 |
+| `actions/configure-pages` | v5 |
+| `actions/deploy-pages` | v4 |
+| `actions/upload-pages-artifact` | v3 |
+| `golangci/golangci-lint-action` | v6 |
+| `docker/build-push-action` | v6 |
+| `docker/login-action` | v3 |
+| `docker/setup-buildx-action` | v3 |
+| `docker/setup-qemu-action` | v3 |
+| `docker/metadata-action` | v5 |
+| `codecov/codecov-action` | v4 |
+| `softprops/action-gh-release` | v2 |
+| `github/codeql-action` | v3 |
+
+**golangci-lint 바이너리 버전:** `golangci/golangci-lint-action` 스텝
+내부의 `version:` 입력은 v2 이상으로 해석되어야 합니다. v1.x 고정은
+golangci-lint v2가 호환성을 깨는 설정 변경을 도입했기 때문에 거부됩니다.
+
+최소 버전을 올리려면 `check-workflow-actions.sh`의 `MIN_MAJOR`를 수정하세요.
 
 ---
 

@@ -55,7 +55,8 @@ commit → pre-commit hooks（並列）→
   ├── Semgrep設定あり？ → semgrep scan
   ├── 大容量ファイルのステージ？ → 拒否（設定可能な制限）
   ├── 空白エラー？ → git diff --check
-  └── 非ASCIIファイル名？ → 拒否（設定可能）
+  ├── 非ASCIIファイル名？ → 拒否（設定可能）
+  └── ワークフロー内の古いGitHub Actions？ → 拒否（設定可能）
 
 commit-msg hooks（並列）→
   ├── タイトル行 >72文字？ → 拒否
@@ -108,6 +109,7 @@ test:
 | `lint-org.sh` | ステージされた`.org`ファイルに`org-lint`を実行 | ステージされた`.org`ファイルなし、ツール未インストール |
 | `lint-semgrep.sh` | 静的解析のため`semgrep scan`を実行 | `.semgrep.yml`、`.semgrep.yaml`、`.semgrep/`ディレクトリなし；ツール未インストール；またはMakefile `check:`ターゲットが`semgrep`に言及 |
 | `test-bazel.sh` | `bazel-affected-tests`で影響を受けるBazelテストを実行、フォーマットテスト自動修正 | `BUILD`/`BUILD.bazel`ファイルなし、`bazel`未インストール、またはMakefile `check:`ターゲットが`bazel test`に言及 |
+| `check-workflow-actions.sh` | ステージされた`.github/workflows/*.yml`で既知のアクションのメジャーバージョンが最小値未満（`actions/checkout@v3`など）、または`golangci-lint-action`がgolangci-lint v1を指定している場合に拒否 | ステージされたワークフローファイルなし、または`git config hooks.checkactions false` |
 
 ### Commit-msg Hooks（すべて並列実行）
 
@@ -124,6 +126,7 @@ test:
 | `git config hooks.allownonascii true` | 非ASCIIファイル名を許可 |
 | `git config hooks.i18nsync true` | ドキュメント同期チェックを有効化（すべての言語バリアントのステージが必要） |
 | `git config hooks.maxfilesize <bytes>` | 大容量ファイル閾値を設定（デフォルト：1048576 = 1 MB） |
+| `git config hooks.checkactions false` | 古いGitHub Actionsチェックを無効化（デフォルト有効） |
 | Makefile `check:`ターゲット | 存在時にツール固有のhooksを代替 |
 | Makefileの`.NOTPARALLEL` | 並列`make -j`実行を無効化 |
 
