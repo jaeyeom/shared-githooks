@@ -147,7 +147,11 @@ process_manifest() {
     mode="${line%%[[:space:]]*}"
     rest="${line#"$mode"}"
     rest="${rest#"${rest%%[![:space:]]*}"}"
-    if [ -z "$rest" ]; then
+    # Strip an inline comment (whitespace followed by '#' to end of line),
+    # then trim any whitespace it left behind.
+    rest="${rest%%[[:space:]]#*}"
+    rest="${rest%"${rest##*[![:space:]]}"}"
+    if [ -z "$rest" ] || [ "${rest:0:1}" = "#" ]; then
       echo "worktree-seed: ignoring manifest line without a path: $line" >&2
       continue
     fi

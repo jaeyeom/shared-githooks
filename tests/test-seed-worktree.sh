@@ -102,6 +102,17 @@ rm -f "$MAIN/seeded-marker"
 # manifest (big.local must not be copied onto itself or duplicated oddly).
 [ -f "$MAIN/.env" ] || fail "main tree: pre-existing file disappeared"
 
+# --- Case 6b: inline comments are stripped from the path/glob ---
+printf 'a\n' >"$MAIN/.seedme"
+printf 'b\n' >"$MAIN/comment"
+printf 'copy\t.seedme  # this comment must not become a glob token\n' \
+  >"$(git -C "$MAIN" rev-parse --absolute-git-dir)/worktree-seed"
+WT6b="$WORK/wt6b"
+git -C "$MAIN" worktree add -q "$WT6b" -b wt6b >/dev/null
+(cd "$WT6b" && bash "$HOOK" "$NULL_OID" "$(git -C "$WT6b" rev-parse HEAD)" 1)
+[ -f "$WT6b/.seedme" ] || fail "inline comment: .seedme not seeded"
+[ ! -e "$WT6b/comment" ] || fail "inline comment: 'comment' token was seeded"
+
 # --- Case 6: refuse path-traversal and absolute manifest entries ---
 printf 'copy\t../escape\ncopy\t/etc/passwd\n' \
   >"$(git -C "$MAIN" rev-parse --absolute-git-dir)/worktree-seed"
