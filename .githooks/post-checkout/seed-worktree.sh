@@ -76,6 +76,23 @@ human_size() {
 
 seed_one() {
   local mode=$1 rel=$2
+
+  # Only allow safe relative paths. An absolute path or a ".." segment could
+  # read from or write to locations outside the trees, so refuse it before
+  # touching the filesystem.
+  case "$rel" in
+    "" | /*)
+      echo "worktree-seed: refusing non-relative path '$rel'" >&2
+      return 0
+      ;;
+  esac
+  case "/$rel/" in
+    */../*)
+      echo "worktree-seed: refusing path with '..' segment: '$rel'" >&2
+      return 0
+      ;;
+  esac
+
   local src="$MAIN_TREE/$rel"
   local dst="$NEW_TREE/$rel"
 

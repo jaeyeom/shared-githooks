@@ -10,7 +10,9 @@ HOOK="$REPO_ROOT/.githooks/post-checkout/seed-worktree.sh"
 # Isolate from any git environment leaked in by an invoking hook (a pre-commit
 # run exports GIT_DIR, GIT_INDEX_FILE, etc., which would otherwise point this
 # test's temp-repo git commands back at the real repository).
-for v in $(git rev-parse --local-env-vars 2>/dev/null); do
+# `|| true` keeps a Git that doesn't support --local-env-vars from tripping
+# `set -e`; the isolation is best-effort.
+for v in $(git rev-parse --local-env-vars 2>/dev/null || true); do
   unset "$v" 2>/dev/null || true
 done
 
@@ -99,6 +101,16 @@ rm -f "$MAIN/seeded-marker"
 # .env already exists in main; assert nothing new appeared from the personal
 # manifest (big.local must not be copied onto itself or duplicated oddly).
 [ -f "$MAIN/.env" ] || fail "main tree: pre-existing file disappeared"
+
+# --- Case 6: refuse path-traversal and absolute manifest entries ---
+printf 'copy\t../escape\ncopy\t/etc/passwd\n' \
+  >"$(git -C "$MAIN" rev-parse --absolute-git-dir)/worktree-seed"
+WT6="$WORK/wt6"
+git -C "$MAIN" worktree add -q "$WT6" -b wt6 >/dev/null
+out6=$( (cd "$WT6" && bash "$HOOK" "$NULL_OID" "$(git -C "$WT6" rev-parse HEAD)" 1) 2>&1 || true)
+echo "$out6" | grep -q "refusing path with '..' segment" || fail "traversal: '..' entry not refused"
+echo "$out6" | grep -q "refusing non-relative path" || fail "traversal: absolute entry not refused"
+[ ! -e "$WORK/escape" ] || fail "traversal: wrote outside the worktree"
 
 if [ "$FAILED" -ne 0 ]; then
   echo >&2 "seed-worktree test failed."
