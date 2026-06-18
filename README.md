@@ -119,6 +119,52 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | `check-co-authored-by.sh` | Rejects `Co-Authored-By:` lines | Never (always runs) |
 | `check-generated-comment.sh` | Rejects `Generated with ` markers (AI tool artifacts) | Never (always runs) |
 
+### Post-checkout Hooks
+
+| Hook | What It Does | Skip Conditions |
+|------|--------------|-----------------|
+| `seed-worktree.sh` | Seeds untracked personal files (`.env`, `.bazelrc.user`, …) into a newly created `git worktree` by copying or symlinking the entries listed in a `worktree-seed` manifest | Not a fresh linked-worktree checkout (in-place branch switches, file checkouts, fresh clones, and submodules are all ignored); no manifest present; never clobbers existing files; skips symlinks and files over the size cap |
+
+## Seeding New Worktrees
+
+When you run `git worktree add`, untracked files don't come along — that's how Git works. Personal config that lives outside version control (`.env`, `.env.local`, `.bazelrc.user`, …) would have to be recreated by hand in every worktree. The `seed-worktree.sh` post-checkout hook does it for you, scoped by a small manifest so it only touches files you explicitly list (never build outputs, caches, or secrets).
+
+### Manifest format
+
+One entry per line, `mode` then a path or glob. Blank lines and `#` comments are ignored:
+
+```
+# mode  path-or-glob
+copy    .env
+copy    .env.local
+link    .bazelrc.user
+copy    config/*.local.yaml
+```
+
+- `copy` — an independent **seed** per worktree. Right for `.env`, where you often want different ports or values in each worktree.
+- `link` — a symlink back to the file in the main working tree, so all worktrees share a single source of truth. Right for things like `.bazelrc.user`.
+
+The hook only seeds entries that exist in the main tree and are **absent** in the new worktree. It is idempotent and never overwrites an existing file. Globs are expanded relative to the main tree; symlinked sources and files larger than the size cap are skipped.
+
+### Manifest locations
+
+Manifests are read from the main working tree's filesystem, so they work whether or not they are tracked. Both are layered when present, with the personal manifest winning on any path listed in both:
+
+| Location | Use |
+|----------|-----|
+| `<main-tree>/.git/worktree-seed` | **Personal, untracked** (preferred). Never shows in `git status`, no `.gitignore` entry needed, dies with the repo. |
+| `<main-tree>/.worktree-seed` | **Committed** team-wide baseline that everyone gets. |
+
+### Worked example: per-worktree `.bazelrc.user`
+
+A Bazel repo's `.bazelrc` often ends with `try-import %workspace%/.bazelrc.user`. `%workspace%` resolves per-worktree, and Bazel does **not** expand `~`, `$HOME`, or `%home%` in `import`/`try-import` — only `%workspace%` and absolute paths resolve. So each worktree needs its own `.bazelrc.user`. Add it to the manifest as a `link` and every new worktree gets a symlink to the main tree's copy, edit-once:
+
+```
+link    .bazelrc.user
+```
+
+> CI and other non-hook checkouts get nothing — fine for a worktree-convenience feature, since CI doesn't create worktrees. `git worktree add --no-checkout` also won't fire the hook.
+
 ## Configuration
 
 | Setting | Effect |
@@ -127,6 +173,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | `git config hooks.i18nsync true` | Enable documentation sync check (requires all language variants staged together) |
 | `git config hooks.maxfilesize <bytes>` | Set large file threshold (default: 1048576 = 1 MB) |
 | `git config hooks.checkactions false` | Disable the outdated GitHub Actions check (enabled by default) |
+| `git config hooks.worktreeseedmaxsize <bytes>` | Set the per-file size cap for worktree seeding (default: 1048576 = 1 MB) |
 | Makefile `check:` target | Overrides tool-specific hooks when present |
 | `.NOTPARALLEL` in Makefile | Disables parallel `make -j` execution |
 
