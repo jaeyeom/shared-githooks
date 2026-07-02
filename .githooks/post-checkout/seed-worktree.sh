@@ -96,8 +96,8 @@ seed_one() {
   local src="$MAIN_TREE/$rel"
   local dst="$NEW_TREE/$rel"
 
-  # Must exist in the main tree, and be a plain regular file.
-  if [ ! -e "$src" ] || [ -L "$src" ] || [ -d "$src" ]; then
+  # Must exist in the main tree as a plain regular file (not symlink, dir, fifo, …).
+  if [ -L "$src" ] || [ ! -f "$src" ]; then
     return 0
   fi
 

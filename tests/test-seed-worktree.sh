@@ -113,6 +113,14 @@ git -C "$MAIN" worktree add -q "$WT6b" -b wt6b >/dev/null
 [ -f "$WT6b/.seedme" ] || fail "inline comment: .seedme not seeded"
 [ ! -e "$WT6b/comment" ] || fail "inline comment: 'comment' token was seeded"
 
+# --- Case 7: skip non-regular files (e.g. FIFOs) ---
+mkfifo "$MAIN/.fifo" 2>/dev/null || true
+printf 'copy\t.fifo\n' >"$(git -C "$MAIN" rev-parse --absolute-git-dir)/worktree-seed"
+WT7="$WORK/wt7"
+git -C "$MAIN" worktree add -q "$WT7" -b wt7 >/dev/null
+(cd "$WT7" && bash "$HOOK" "$NULL_OID" "$(git -C "$WT7" rev-parse HEAD)" 1)
+[ ! -e "$WT7/.fifo" ] || fail "fifo: named pipe should not be seeded"
+
 # --- Case 6: refuse path-traversal and absolute manifest entries ---
 printf 'copy\t../escape\ncopy\t/etc/passwd\n' \
   >"$(git -C "$MAIN" rev-parse --absolute-git-dir)/worktree-seed"
