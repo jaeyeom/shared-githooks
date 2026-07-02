@@ -330,3 +330,66 @@ golangci-lint v2が互換性を破る設定変更を導入したため、v1.xの
 拒否します。AIツールが自動的に追加する生成マーカーの削除を促します。
 
 **検査パターン：** `Generated with `
+
+## Post-checkout Hooks
+
+`git checkout`時および`git worktree add`後に実行されるhookです。
+`.githooks/post-checkout/`の最上位に配置され、**順次** 実行されます。
+
+### seed-worktree.sh — Worktreeファイルシード
+
+追跡されていない／gitignoreされた個人ファイル（`.env`、`.bazelrc.user` など）
+を、メイン作業ツリーからコピーまたはシンボリックリンクで新規作成のリンク
+worktreeにシードします。マニフェストで駆動され、列挙したファイルのみをシード
+し、gitignoreされたすべてのファイル（ビルド成果物、キャッシュ、シークレット
+など）を無闇に取り込むことはありません。
+
+**デフォルトのサイズ上限：** 1 MB（1048576 バイト）
+
+**設定：**
+
+```bash
+git config hooks.worktreeseedmaxsize <bytes>
+```
+
+**動作タイミング：** 新規の*リンク*worktreeへの新規チェックアウト時のみ動作
+します。hookは`$1=old-HEAD $2=new-HEAD $3=flag`を受け取り、次の条件をすべて
+満たす場合のみ実行されます：
+
+- `$3` == `1`（ファイルチェックアウトではなくブランチチェックアウト）、**かつ**
+- `$1`がヌルOID（インプレースのブランチ切り替えではなく新規チェックアウト）、
+  **かつ**
+- `git rev-parse --absolute-git-dir`が解決された`--git-common-dir`と異なる
+  （リンクworktreeであり、メインツリーの新規クローンもこれで除外される）、**かつ**
+- `git rev-parse --show-superproject-working-tree`が空（サブモジュールでない）。
+
+**マニフェスト形式** — 1行に1項目、`mode`の後にパスまたはグロブ；空行と`#`
+コメントは無視されます：
+
+```
+# mode  path-or-glob
+copy    .env
+link    .bazelrc.user
+copy    config/*.local.yaml
+```
+
+- `copy` — worktreeごとに独立したシード（例：worktreeごとに値を変えたい`.env`）。
+- `link` — メインツリーのファイルへのシンボリックリンクで、すべてのworktreeが
+  単一のソースを共有（例：`.bazelrc.user`）。
+
+**マニフェストの場所**（両方が重ね合わされ、競合時は個人用が優先）：
+
+- `<main-tree>/.git/worktree-seed` — 個人用・追跡なし（推奨）。
+- `<main-tree>/.worktree-seed` — コミット済みのチーム共通デフォルト。
+
+**動作：**
+- メインツリーに存在し、かつ新しいworktreeには存在しない項目のみをシード
+  （冪等、上書きしない）
+- グロブはメインツリーを基準に展開
+- シンボリックリンクのソース、ディレクトリ、サイズ上限を超えるファイルはスキップ
+- メイン作業ツリーは`git worktree list --porcelain`の最初の項目から解決
+
+**注意事項：**
+- hookが有効である必要があり、CIやその他のhookを使わないチェックアウトには
+  何も適用されない（CIはworktreeを作成しないため問題なし）
+- `git worktree add --no-checkout`は`post-checkout`を発動させない

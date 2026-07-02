@@ -119,6 +119,52 @@ test:
 | `check-co-authored-by.sh` | `Co-Authored-By:` 줄 거부 | 항상 실행 |
 | `check-generated-comment.sh` | `Generated with ` 마커 (AI 도구 아티팩트) 거부 | 항상 실행 |
 
+### Post-checkout Hooks
+
+| Hook | 기능 | 스킵 조건 |
+|------|------|----------|
+| `seed-worktree.sh` | 추적되지 않는 개인 파일(`.env`, `.bazelrc.user` 등)을 `worktree-seed` 매니페스트에 나열된 항목에 따라 복사하거나 심볼릭 링크로 새 `git worktree`에 시딩 | 새로 만든 연결 worktree 체크아웃이 아님(제자리 브랜치 전환, 파일 체크아웃, 새 클론, 서브모듈은 모두 무시); 매니페스트 없음; 기존 파일은 절대 덮어쓰지 않음; 심볼릭 링크와 크기 상한 초과 파일은 건너뜀 |
+
+## 새 Worktree 시딩
+
+`git worktree add`를 실행하면 추적되지 않는 파일은 함께 오지 않습니다 — Git의 동작 방식입니다. 버전 관리 밖에 있는 개인 설정(`.env`, `.env.local`, `.bazelrc.user` 등)을 worktree마다 손으로 다시 만들어야 합니다. `seed-worktree.sh` post-checkout hook이 이를 대신 처리하며, 작은 매니페스트로 범위를 한정해 나열한 파일만 시딩하고 gitignore된 모든 파일(빌드 산출물, 캐시, 시크릿 등)을 무턱대고 쓸어 담지 않습니다.
+
+### 매니페스트 형식
+
+한 줄에 하나의 항목, `mode` 다음에 경로나 글롭을 적습니다. 빈 줄과 `#` 주석은 무시됩니다:
+
+```
+# mode  path-or-glob
+copy    .env
+copy    .env.local
+link    .bazelrc.user
+copy    config/*.local.yaml
+```
+
+- `copy` — worktree마다 독립적인 **시드**. worktree마다 포트나 값을 다르게 하고 싶은 `.env`에 적합합니다.
+- `link` — 메인 작업 트리의 파일로 향하는 심볼릭 링크로, 모든 worktree가 단일 소스를 공유합니다. `.bazelrc.user` 같은 것에 적합합니다.
+
+hook은 메인 트리에 존재하면서 새 worktree에는 **없는** 항목만 시딩합니다. 멱등적이며 기존 파일을 절대 덮어쓰지 않습니다. 글롭은 메인 트리 기준으로 확장되고, 심볼릭 링크 소스와 크기 상한을 넘는 파일은 건너뜁니다.
+
+### 매니페스트 위치
+
+매니페스트는 메인 작업 트리의 파일 시스템에서 읽으므로 추적 여부와 무관하게 동작합니다. 둘 다 있으면 계층화되며, 양쪽에 모두 나열된 경로는 개인 매니페스트가 우선합니다:
+
+| 위치 | 용도 |
+|------|------|
+| `<main-tree>/.git/worktree-seed` | **개인용, 추적 안 됨** (권장). `git status`에 나타나지 않고, `.gitignore` 항목도 필요 없으며, 저장소와 운명을 함께합니다. |
+| `<main-tree>/.worktree-seed` | 모두가 받는 **커밋된** 팀 공통 기본값. |
+
+### 실전 예제: worktree별 `.bazelrc.user`
+
+Bazel 저장소의 `.bazelrc`는 흔히 `try-import %workspace%/.bazelrc.user`로 끝납니다. `%workspace%`는 worktree마다 해석되며, Bazel은 `import`/`try-import`에서 `~`, `$HOME`, `%home%`를 **확장하지 않습니다** — `%workspace%`와 절대 경로만 해석됩니다. 따라서 worktree마다 자체 `.bazelrc.user`가 필요합니다. 매니페스트에 `link`로 추가하면 모든 새 worktree가 메인 트리 복사본을 가리키는 심볼릭 링크를 얻어 한 번만 편집하면 됩니다:
+
+```
+link    .bazelrc.user
+```
+
+> CI 및 기타 hook 없는 체크아웃에는 아무것도 적용되지 않습니다 — CI가 worktree를 만들지 않으므로 worktree 편의 기능으로는 문제없습니다. `git worktree add --no-checkout`도 hook을 발동시키지 않습니다.
+
 ## 설정
 
 | 설정 | 효과 |
@@ -127,6 +173,7 @@ test:
 | `git config hooks.i18nsync true` | 문서 동기화 검사 활성화 (모든 언어 변형이 함께 스테이징되어야 함) |
 | `git config hooks.maxfilesize <bytes>` | 대용량 파일 임계값 설정 (기본: 1048576 = 1 MB) |
 | `git config hooks.checkactions false` | 오래된 GitHub Actions 검사 비활성화 (기본 활성화) |
+| `git config hooks.worktreeseedmaxsize <bytes>` | worktree 시딩의 파일당 크기 상한 설정 (기본: 1048576 = 1 MB) |
 | Makefile `check:` 타겟 | 존재 시 도구별 hooks를 대체 |
 | Makefile의 `.NOTPARALLEL` | 병렬 `make -j` 실행 비활성화 |
 

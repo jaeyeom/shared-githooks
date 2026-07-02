@@ -119,6 +119,52 @@ test:
 | `check-co-authored-by.sh` | `Co-Authored-By:`行を拒否 | 常に実行 |
 | `check-generated-comment.sh` | `Generated with `マーカー（AIツールアーティファクト）を拒否 | 常に実行 |
 
+### Post-checkout Hooks
+
+| Hook | 機能 | スキップ条件 |
+|------|------|-------------|
+| `seed-worktree.sh` | 追跡されていない個人ファイル（`.env`、`.bazelrc.user` など）を、`worktree-seed`マニフェストに列挙された項目に従ってコピーまたはシンボリックリンクで新しい`git worktree`にシード | 新規作成されたリンクworktreeのチェックアウトでない（インプレースのブランチ切り替え、ファイルチェックアウト、新規クローン、サブモジュールはすべて無視）；マニフェストがない；既存ファイルは決して上書きしない；シンボリックリンクとサイズ上限を超えるファイルはスキップ |
+
+## 新しいWorktreeのシード
+
+`git worktree add`を実行しても追跡されていないファイルは付いてきません — これがGitの仕組みです。バージョン管理外の個人設定（`.env`、`.env.local`、`.bazelrc.user` など）をworktreeごとに手で作り直す必要があります。`seed-worktree.sh` post-checkout hookがこれを代行し、小さなマニフェストで範囲を限定して、列挙したファイルのみをシードし、gitignoreされたすべてのファイル（ビルド成果物、キャッシュ、シークレットなど）を無闇に取り込むことはありません。
+
+### マニフェスト形式
+
+1行に1項目、`mode`の後にパスまたはグロブを記述します。空行と`#`コメントは無視されます：
+
+```
+# mode  path-or-glob
+copy    .env
+copy    .env.local
+link    .bazelrc.user
+copy    config/*.local.yaml
+```
+
+- `copy` — worktreeごとに独立した**シード**。worktreeごとにポートや値を変えたい`.env`に適しています。
+- `link` — メイン作業ツリーのファイルへのシンボリックリンクで、すべてのworktreeが単一のソースを共有します。`.bazelrc.user`のようなものに適しています。
+
+hookはメインツリーに存在し、かつ新しいworktreeには**存在しない**項目のみをシードします。冪等であり、既存ファイルを決して上書きしません。グロブはメインツリーを基準に展開され、シンボリックリンクのソースとサイズ上限を超えるファイルはスキップされます。
+
+### マニフェストの場所
+
+マニフェストはメイン作業ツリーのファイルシステムから読み込まれるため、追跡の有無にかかわらず動作します。両方が存在する場合は重ね合わされ、両方に列挙されたパスは個人マニフェストが優先されます：
+
+| 場所 | 用途 |
+|------|------|
+| `<main-tree>/.git/worktree-seed` | **個人用・追跡なし**（推奨）。`git status`に現れず、`.gitignore`項目も不要で、リポジトリと運命を共にします。 |
+| `<main-tree>/.worktree-seed` | 全員が受け取る**コミット済み**のチーム共通デフォルト。 |
+
+### 実例：worktreeごとの`.bazelrc.user`
+
+Bazelリポジトリの`.bazelrc`はよく`try-import %workspace%/.bazelrc.user`で終わります。`%workspace%`はworktreeごとに解決され、Bazelは`import`/`try-import`で`~`、`$HOME`、`%home%`を**展開しません** — `%workspace%`と絶対パスのみが解決されます。したがってworktreeごとに独自の`.bazelrc.user`が必要です。マニフェストに`link`として追加すれば、すべての新しいworktreeがメインツリーのコピーを指すシンボリックリンクを得て、一度編集すれば済みます：
+
+```
+link    .bazelrc.user
+```
+
+> CIやその他のhookを使わないチェックアウトには何も適用されません — CIはworktreeを作成しないため、worktree用の利便性機能としては問題ありません。`git worktree add --no-checkout`もhookを発動させません。
+
 ## 設定
 
 | 設定 | 効果 |
@@ -127,6 +173,7 @@ test:
 | `git config hooks.i18nsync true` | ドキュメント同期チェックを有効化（すべての言語バリアントのステージが必要） |
 | `git config hooks.maxfilesize <bytes>` | 大容量ファイル閾値を設定（デフォルト：1048576 = 1 MB） |
 | `git config hooks.checkactions false` | 古いGitHub Actionsチェックを無効化（デフォルト有効） |
+| `git config hooks.worktreeseedmaxsize <bytes>` | worktreeシードのファイルごとのサイズ上限を設定（デフォルト：1048576 = 1 MB） |
 | Makefile `check:`ターゲット | 存在時にツール固有のhooksを代替 |
 | Makefileの`.NOTPARALLEL` | 並列`make -j`実行を無効化 |
 

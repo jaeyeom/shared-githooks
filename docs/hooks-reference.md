@@ -319,3 +319,66 @@ Rejects commits containing the `Generated with ` string in the message.
 This encourages removal of markers auto-added by AI tools.
 
 **Pattern:** `Generated with `
+
+## Post-checkout Hooks
+
+Hooks that run on `git checkout` and after `git worktree add`. Located at the
+top level of `.githooks/post-checkout/` and executed **sequentially**.
+
+### seed-worktree.sh — Worktree File Seeding
+
+Seeds untracked/gitignored personal files (`.env`, `.bazelrc.user`, …) into a
+newly created linked worktree, by copying or symlinking them from the main
+working tree. Driven by a manifest so it only seeds what you list, instead of
+blindly sweeping in every gitignored file (build outputs, caches, secrets, and
+the like).
+
+**Default size cap:** 1 MB (1048576 bytes)
+
+**Configuration:**
+
+```bash
+git config hooks.worktreeseedmaxsize <bytes>
+```
+
+**When it acts:** only on a fresh checkout into a new *linked* worktree. The
+hook receives `$1=old-HEAD $2=new-HEAD $3=flag` and runs only when:
+
+- `$3` == `1` (a branch checkout, not a file checkout), **and**
+- `$1` is the null OID (a fresh checkout, not an in-place branch switch), **and**
+- `git rev-parse --absolute-git-dir` != the resolved `--git-common-dir` (a
+  linked worktree, which also rules out a fresh clone of the main tree), **and**
+- `git rev-parse --show-superproject-working-tree` is empty (not a submodule).
+
+**Manifest format** — one entry per line, `mode` then a path or glob; blank
+lines and `#` comments are ignored:
+
+```
+# mode  path-or-glob
+copy    .env
+link    .bazelrc.user
+copy    config/*.local.yaml
+```
+
+- `copy` — an independent seed per worktree (e.g. `.env`, where each worktree
+  may want different values).
+- `link` — a symlink back to the main tree's file, so all worktrees share one
+  source of truth (e.g. `.bazelrc.user`).
+
+**Manifest locations** (both are layered; the personal one wins on conflicts):
+
+- `<main-tree>/.git/worktree-seed` — personal, untracked (preferred).
+- `<main-tree>/.worktree-seed` — committed team-wide baseline.
+
+**Behavior:**
+- Seeds only entries that exist in the main tree and are absent in the new
+  worktree (idempotent, never clobbers)
+- Globs are expanded relative to the main tree
+- Skips symlinked sources, directories, and files over the size cap
+- The main working tree is resolved from the first entry of
+  `git worktree list --porcelain`
+
+**Caveats:**
+- Rides on the hook being active; CI and other non-hook checkouts get nothing
+  (fine — CI doesn't create worktrees)
+- `git worktree add --no-checkout` does not fire `post-checkout`

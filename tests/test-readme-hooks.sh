@@ -26,10 +26,16 @@ for f in "$HOOKS_DIR"/commit-msg/checks/*.sh; do
   [ -f "$f" ] && actual_commit_msg+=("$(basename "$f")")
 done
 
+actual_post_checkout=()
+for f in "$HOOKS_DIR"/post-checkout/*.sh; do
+  [ -f "$f" ] && actual_post_checkout+=("$(basename "$f")")
+done
+
 # Collect hooks documented in README tables.
 # The tables use the format: | `hook-name.sh` | ...
 readme_pre_commit=()
 readme_commit_msg=()
+readme_post_checkout=()
 
 in_section=""
 while IFS= read -r line; do
@@ -37,6 +43,8 @@ while IFS= read -r line; do
     in_section="pre-commit"
   elif [[ "$line" =~ ^###\ Commit-msg ]]; then
     in_section="commit-msg"
+  elif [[ "$line" =~ ^###\ Post-checkout ]]; then
+    in_section="post-checkout"
   elif [[ "$line" =~ ^## ]] && [[ ! "$line" =~ ^### ]]; then
     in_section=""
   fi
@@ -45,6 +53,8 @@ while IFS= read -r line; do
     readme_pre_commit+=("${BASH_REMATCH[1]}")
   elif [[ "$in_section" == "commit-msg" ]] && [[ "$line" =~ ^\|\ \`([a-z0-9_-]+\.sh)\` ]]; then
     readme_commit_msg+=("${BASH_REMATCH[1]}")
+  elif [[ "$in_section" == "post-checkout" ]] && [[ "$line" =~ ^\|\ \`([a-z0-9_-]+\.sh)\` ]]; then
+    readme_post_checkout+=("${BASH_REMATCH[1]}")
   fi
 done <"$README"
 
@@ -90,8 +100,29 @@ for doc in "${readme_commit_msg[@]}"; do
   fi
 done
 
+# Check: every actual post-checkout hook is documented.
+for hook in "${actual_post_checkout[@]}"; do
+  found=0
+  for doc in "${readme_post_checkout[@]}"; do
+    if [ "$hook" = "$doc" ]; then
+      found=1
+      break
+    fi
+  done
+  if [ "$found" -eq 0 ]; then
+    fail "post-checkout hook '$hook' exists on disk but is not documented in README.md"
+  fi
+done
+
+# Check: every documented post-checkout hook exists on disk.
+for doc in "${readme_post_checkout[@]}"; do
+  if [ ! -f "$HOOKS_DIR/post-checkout/$doc" ]; then
+    fail "post-checkout hook '$doc' is documented in README.md but does not exist on disk"
+  fi
+done
+
 # Check: all hook scripts are executable.
-for f in "$HOOKS_DIR"/pre-commit/checks/*.sh "$HOOKS_DIR"/commit-msg/checks/*.sh; do
+for f in "$HOOKS_DIR"/pre-commit/checks/*.sh "$HOOKS_DIR"/commit-msg/checks/*.sh "$HOOKS_DIR"/post-checkout/*.sh; do
   [ -f "$f" ] || continue
   if [ ! -x "$f" ]; then
     fail "$(basename "$f") is not executable"

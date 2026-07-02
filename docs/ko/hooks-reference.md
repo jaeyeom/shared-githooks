@@ -318,3 +318,65 @@ golangci-lint v2가 호환성을 깨는 설정 변경을 도입했기 때문에 
 AI 도구가 자동으로 추가하는 생성 마커를 제거하도록 유도합니다.
 
 **검사 패턴:** `Generated with `
+
+## Post-checkout Hooks
+
+`git checkout` 시 및 `git worktree add` 이후에 실행되는 hooks입니다.
+`.githooks/post-checkout/` 최상위에 위치하며 **순차적으로** 실행됩니다.
+
+### seed-worktree.sh — Worktree 파일 시딩
+
+추적되지 않거나 gitignore된 개인 파일(`.env`, `.bazelrc.user` 등)을 메인 작업
+트리에서 복사하거나 심볼릭 링크로 새로 만든 연결 worktree에 시딩합니다.
+매니페스트로 구동되어 나열한 파일만 시딩하며, gitignore된 모든 파일(빌드
+산출물, 캐시, 시크릿 등)을 무턱대고 쓸어 담지 않습니다.
+
+**기본 크기 상한:** 1 MB (1048576 바이트)
+
+**설정:**
+
+```bash
+git config hooks.worktreeseedmaxsize <bytes>
+```
+
+**작동 시점:** 새 *연결* worktree로의 새로운 체크아웃에서만 작동합니다. hook은
+`$1=old-HEAD $2=new-HEAD $3=flag`를 받으며 다음 조건을 모두 만족할 때만
+실행됩니다:
+
+- `$3` == `1` (파일 체크아웃이 아닌 브랜치 체크아웃), **그리고**
+- `$1`이 널 OID (제자리 브랜치 전환이 아닌 새로운 체크아웃), **그리고**
+- `git rev-parse --absolute-git-dir`가 해석된 `--git-common-dir`와 다름
+  (연결 worktree이며, 메인 트리의 새 클론도 이로써 제외됨), **그리고**
+- `git rev-parse --show-superproject-working-tree`가 비어 있음 (서브모듈 아님).
+
+**매니페스트 형식** — 한 줄에 하나의 항목, `mode` 다음에 경로나 글롭; 빈 줄과
+`#` 주석은 무시됩니다:
+
+```
+# mode  path-or-glob
+copy    .env
+link    .bazelrc.user
+copy    config/*.local.yaml
+```
+
+- `copy` — worktree마다 독립적인 시드 (예: worktree마다 값을 다르게 하고 싶은
+  `.env`).
+- `link` — 메인 트리 파일로 향하는 심볼릭 링크로, 모든 worktree가 단일 소스를
+  공유 (예: `.bazelrc.user`).
+
+**매니페스트 위치** (둘 다 계층화되며, 충돌 시 개인용이 우선):
+
+- `<main-tree>/.git/worktree-seed` — 개인용, 추적 안 됨 (권장).
+- `<main-tree>/.worktree-seed` — 커밋된 팀 공통 기본값.
+
+**동작:**
+- 메인 트리에 존재하면서 새 worktree에는 없는 항목만 시딩 (멱등적, 덮어쓰지
+  않음)
+- 글롭은 메인 트리 기준으로 확장
+- 심볼릭 링크 소스, 디렉토리, 크기 상한 초과 파일은 건너뜀
+- 메인 작업 트리는 `git worktree list --porcelain`의 첫 항목으로 해석
+
+**주의사항:**
+- hook이 활성화되어 있어야 작동; CI 및 기타 hook 없는 체크아웃에는 아무것도
+  적용되지 않음 (CI는 worktree를 만들지 않으므로 문제없음)
+- `git worktree add --no-checkout`는 `post-checkout`을 발동시키지 않음
