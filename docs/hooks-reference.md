@@ -5,10 +5,10 @@ conditions, and configuration options in shared-githooks.
 
 ## Overview
 
-| Hook Type | Scripts | Execution |
-|-----------|---------|-----------|
-| pre-commit | 12 | Parallel (`checks/` directory) |
-| commit-msg | 3 | Parallel (`checks/` directory) |
+| Hook Type  | Scripts | Execution                      |
+| ---------- | ------- | ------------------------------ |
+| pre-commit | 12      | Parallel (`checks/` directory) |
+| commit-msg | 3       | Parallel (`checks/` directory) |
 
 All hook scripts start with `set -euo pipefail` and silently skip when
 dependencies are missing.
@@ -25,10 +25,12 @@ Hooks that verify code quality before a commit. Located in
 Runs `make -j check` if the project's Makefile has a `check` target.
 
 **Activation conditions:**
+
 - `Makefile` exists in the project root
 - `check:` target is defined in the Makefile
 
 **Skip conditions:**
+
 - No `Makefile` present
 - No `check:` target defined
 
@@ -49,6 +51,7 @@ git config hooks.maxfilesize <bytes>
 ```
 
 **Behavior:**
+
 - Checks the size of all staged files (Added/Changed/Modified)
 - Displays filename and size when threshold is exceeded, and aborts the commit
 - Always runs (no skip conditions)
@@ -60,11 +63,13 @@ git config hooks.maxfilesize <bytes>
 Detects trailing whitespace, space-before-tab, and other whitespace errors.
 
 **Behavior:**
+
 - Uses `git diff-index --check --cached` to inspect staged changes
 - Excludes files handled by language-specific formatters
 - Excludes files marked `binary`, `-text`, or `eol=crlf` in `.gitattributes`
 
 **Excluded file extensions:**
+
 - `.go` — handled by gofmt
 - `.py` — handled by black/autopep8, etc.
 - `.proto` — handled by clang-format
@@ -102,14 +107,17 @@ git config hooks.i18nsync true
 ```
 
 **Language discovery:**
+
 - Languages are auto-discovered from tracked `README.<lang>.md` files
 - If no `README.<lang>.md` files exist, the hook does nothing
 
 **Tracked file groups:**
+
 - `README.md` ↔ `README.<lang>.md` (all variants must be staged together)
 - `docs/*.md` ↔ `docs/<lang>/*.md` (only enforced when translation counterparts exist)
 
 **Skip conditions:**
+
 - `hooks.i18nsync` is not set to `true` (default)
 - No `README.<lang>.md` files tracked in the repository
 - A `docs/` file has no translation counterparts
@@ -134,10 +142,12 @@ git config hooks.allownonascii true
 Runs `golangci-lint` on Go projects.
 
 **Activation conditions:**
+
 - `.golangci.yml` exists in the project root
 - `golangci-lint` is installed
 
 **Skip conditions:**
+
 - No `.golangci.yml` present
 - `golangci-lint` is not installed (prints warning)
 - Makefile `check` target already runs `golangci-lint` (deduplication)
@@ -152,10 +162,12 @@ execution environment.
 Runs `ruff check` and `ruff format --check` on Python projects.
 
 **Activation conditions:**
+
 - `ruff.toml`, `.ruff.toml`, or a `[tool.ruff]` section in `pyproject.toml` exists
 - `ruff` is installed
 
 **Skip conditions:**
+
 - No ruff configuration file present
 - `ruff` is not installed (prints warning)
 - Makefile `check` target already runs `ruff` (deduplication)
@@ -168,10 +180,12 @@ Runs `ruff check` and `ruff format --check` on Python projects.
 Runs `shellcheck` on staged `.sh` files.
 
 **Activation conditions:**
+
 - `shellcheck` is installed
 - Staged `.sh` files exist (Added/Changed/Modified)
 
 **Skip conditions:**
+
 - `shellcheck` is not installed (prints warning)
 - No staged `.sh` files
 - Makefile `check` target already runs `shellcheck` (deduplication)
@@ -183,10 +197,12 @@ Runs `shellcheck` on staged `.sh` files.
 Runs `org-lint` on staged `.org` files.
 
 **Activation conditions:**
+
 - `org-lint` is installed
 - Staged `.org` files exist (Added/Changed/Modified)
 
 **Skip conditions:**
+
 - `org-lint` is not installed (silently skipped)
 - No staged `.org` files
 
@@ -197,10 +213,12 @@ Runs `org-lint` on staged `.org` files.
 Runs `semgrep scan` on projects with Semgrep configuration.
 
 **Activation conditions:**
+
 - `.semgrep.yml`, `.semgrep.yaml`, or `.semgrep/` directory exists
 - `semgrep` is installed
 
 **Skip conditions:**
+
 - No Semgrep configuration file/directory present
 - `semgrep` is not installed (prints warning)
 - Makefile `check` target already runs `semgrep` (deduplication)
@@ -212,24 +230,29 @@ Runs `semgrep scan` on projects with Semgrep configuration.
 Runs tests affected by changes in Bazel projects.
 
 **Activation conditions:**
+
 - `BUILD` or `BUILD.bazel` exists in the project root
 - `bazel` is installed
 
 **Skip conditions:**
+
 - No `BUILD`/`BUILD.bazel` present
 - `bazel` is not installed (prints warning)
 - Makefile `check` target already runs `bazel test` (deduplication)
 
 **Smart test selection:**
+
 - If `bazel-affected-tests` binary is available, only affected tests are run
 - Otherwise, falls back to `bazel test //...:all`
 
 **Format test special handling:**
+
 - When `//tools/format:` tests fail, automatically runs
   `bazel run //:format` to reformat code, then aborts the commit
 - Developers can review the reformatted code and commit again
 
 **Platform limitation:**
+
 - On macOS (Darwin), non-format tests are skipped
 
 ---
@@ -249,9 +272,11 @@ git config hooks.checkactions false
 ```
 
 **Activation conditions:**
+
 - At least one staged file matches `.github/workflows/*.{yml,yaml}`
 
 **Skip conditions:**
+
 - No staged workflow files
 - `hooks.checkactions` is set to `false`
 - The `uses:` reference is SHA-pinned (`@abc123...`) or branch-pinned (`@main`)
@@ -259,29 +284,29 @@ git config hooks.checkactions false
 
 **Minimum major versions enforced:**
 
-| Action | Minimum |
-|--------|---------|
-| `actions/checkout` | v4 |
-| `actions/setup-go` | v5 |
-| `actions/setup-node` | v4 |
-| `actions/setup-python` | v5 |
-| `actions/setup-java` | v4 |
-| `actions/setup-dotnet` | v4 |
-| `actions/cache` | v4 |
-| `actions/upload-artifact` | v4 |
-| `actions/download-artifact` | v4 |
-| `actions/configure-pages` | v5 |
-| `actions/deploy-pages` | v4 |
-| `actions/upload-pages-artifact` | v3 |
-| `golangci/golangci-lint-action` | v6 |
-| `docker/build-push-action` | v6 |
-| `docker/login-action` | v3 |
-| `docker/setup-buildx-action` | v3 |
-| `docker/setup-qemu-action` | v3 |
-| `docker/metadata-action` | v5 |
-| `codecov/codecov-action` | v4 |
-| `softprops/action-gh-release` | v2 |
-| `github/codeql-action` | v3 |
+| Action                          | Minimum |
+| ------------------------------- | ------- |
+| `actions/checkout`              | v4      |
+| `actions/setup-go`              | v5      |
+| `actions/setup-node`            | v4      |
+| `actions/setup-python`          | v5      |
+| `actions/setup-java`            | v4      |
+| `actions/setup-dotnet`          | v4      |
+| `actions/cache`                 | v4      |
+| `actions/upload-artifact`       | v4      |
+| `actions/download-artifact`     | v4      |
+| `actions/configure-pages`       | v5      |
+| `actions/deploy-pages`          | v4      |
+| `actions/upload-pages-artifact` | v3      |
+| `golangci/golangci-lint-action` | v6      |
+| `docker/build-push-action`      | v6      |
+| `docker/login-action`           | v3      |
+| `docker/setup-buildx-action`    | v3      |
+| `docker/setup-qemu-action`      | v3      |
+| `docker/metadata-action`        | v5      |
+| `codecov/codecov-action`        | v4      |
+| `softprops/action-gh-release`   | v2      |
+| `github/codeql-action`          | v3      |
 
 **golangci-lint binary version:** Inside a `golangci/golangci-lint-action`
 step, the `version:` input must resolve to v2 or higher. Pinning v1.x is
@@ -341,7 +366,7 @@ the like).
 git config hooks.worktreeseedmaxsize <bytes>
 ```
 
-**When it acts:** only on a fresh checkout into a new *linked* worktree. The
+**When it acts:** only on a fresh checkout into a new _linked_ worktree. The
 hook receives `$1=old-HEAD $2=new-HEAD $3=flag` and runs only when:
 
 - `$3` == `1` (a branch checkout, not a file checkout), **and**
@@ -371,6 +396,7 @@ copy    config/*.local.yaml
 - `<main-tree>/.worktree-seed` — committed team-wide baseline.
 
 **Behavior:**
+
 - Seeds only entries that exist in the main tree and are absent in the new
   worktree (idempotent, never clobbers)
 - Globs are expanded relative to the main tree
@@ -379,6 +405,7 @@ copy    config/*.local.yaml
   `git worktree list --porcelain`
 
 **Caveats:**
+
 - Rides on the hook being active; CI and other non-hook checkouts get nothing
   (fine — CI doesn't create worktrees)
 - `git worktree add --no-checkout` does not fire `post-checkout`

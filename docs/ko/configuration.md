@@ -48,12 +48,12 @@ patterns:
 
 일부 hook은 Git 설정 값으로 동작을 제어할 수 있습니다:
 
-| 설정 | 기본값 | 설명 |
-|------|--------|-----|
-| `hooks.allownonascii` | `false` | `true`로 설정하면 비ASCII 파일명 허용 |
-| `hooks.i18nsync` | `false` | `true`로 설정하면 모든 언어 변형이 함께 스테이징되어야 함 |
-| `hooks.maxfilesize` | `1048576` (1 MB) | 스테이징된 파일의 최대 크기 (바이트) |
-| `hooks.checkactions` | `true` | `false`로 설정하면 `.github/workflows/` 파일의 오래된 GitHub Actions 검사를 비활성화 |
+| 설정                  | 기본값           | 설명                                                                                 |
+| --------------------- | ---------------- | ------------------------------------------------------------------------------------ |
+| `hooks.allownonascii` | `false`          | `true`로 설정하면 비ASCII 파일명 허용                                                |
+| `hooks.i18nsync`      | `false`          | `true`로 설정하면 모든 언어 변형이 함께 스테이징되어야 함                            |
+| `hooks.maxfilesize`   | `1048576` (1 MB) | 스테이징된 파일의 최대 크기 (바이트)                                                 |
+| `hooks.checkactions`  | `true`           | `false`로 설정하면 `.github/workflows/` 파일의 오래된 GitHub Actions 검사를 비활성화 |
 
 ```bash
 # 비ASCII 파일명 허용
@@ -73,13 +73,13 @@ git config hooks.checkactions false
 
 Githooks가 hook 실행 시 자동으로 설정하는 환경변수입니다:
 
-| 변수 | 설명 |
-|------|-----|
-| `STAGED_FILES` | 스테이징된 파일 목록 (줄바꿈 구분, pre-commit 전용) |
-| `STAGED_FILES_FILE` | 스테이징된 파일 경로가 담긴 파일 경로 (null 구분) |
-| `GITHOOKS_OS` | 운영 체제 (`linux`, `darwin`, `windows`) |
-| `GITHOOKS_ARCH` | 아키텍처 (`amd64`, `arm64`) |
-| `GITHOOKS_CONTAINER_RUN` | 컨테이너 내부 실행 시 설정됨 |
+| 변수                     | 설명                                                |
+| ------------------------ | --------------------------------------------------- |
+| `STAGED_FILES`           | 스테이징된 파일 목록 (줄바꿈 구분, pre-commit 전용) |
+| `STAGED_FILES_FILE`      | 스테이징된 파일 경로가 담긴 파일 경로 (null 구분)   |
+| `GITHOOKS_OS`            | 운영 체제 (`linux`, `darwin`, `windows`)            |
+| `GITHOOKS_ARCH`          | 아키텍처 (`amd64`, `arm64`)                         |
+| `GITHOOKS_CONTAINER_RUN` | 컨테이너 내부 실행 시 설정됨                        |
 
 ## 컨테이너화된 Hook 실행
 
@@ -126,14 +126,14 @@ args:
 
 ### 변수 치환 패턴
 
-| 패턴 | 소스 |
-|------|-----|
-| `${env:VAR}` | 환경변수 |
-| `${git:VAR}` | Git 설정 (자동 스코프) |
-| `${git-l:VAR}` | 로컬 Git 설정 |
-| `${git-g:VAR}` | 글로벌 Git 설정 |
-| `${git-s:VAR}` | 시스템 Git 설정 |
-| `${!env:VAR}` | 필수 환경변수 (없으면 실패) |
+| 패턴           | 소스                        |
+| -------------- | --------------------------- |
+| `${env:VAR}`   | 환경변수                    |
+| `${git:VAR}`   | Git 설정 (자동 스코프)      |
+| `${git-l:VAR}` | 로컬 Git 설정               |
+| `${git-g:VAR}` | 글로벌 Git 설정             |
+| `${git-s:VAR}` | 시스템 Git 설정             |
+| `${!env:VAR}`  | 필수 환경변수 (없으면 실패) |
 
 ## 병렬 실행 설정
 

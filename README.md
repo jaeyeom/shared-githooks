@@ -96,33 +96,33 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 
 ### Pre-commit Hooks (all run in parallel)
 
-| Hook | What It Does | Skip Conditions |
-|------|--------------|-----------------|
-| `check.sh` | Runs `make -j check` if available | No Makefile with `check:` target |
-| `check-large-files.sh` | Rejects staged files exceeding a size threshold (default 1 MB) | Never (always runs); configure limit with `git config hooks.maxfilesize <bytes>` |
-| `check-whitespace.sh` | Detects trailing whitespace and mixed line endings via `git diff-index --check` | Files handled by language formatters (*.go, *.py, *.proto, *.bzl, BUILD*) or marked `binary` / `-text` / `eol=crlf` in `.gitattributes` |
-| `check-i18n-sync.sh` | Requires all language variants of a doc file to be staged together | Opt-in: enable with `git config hooks.i18nsync true` |
-| `check-non-ascii.sh` | Rejects non-ASCII filenames for portability | `git config hooks.allownonascii true` |
-| `lint-go.sh` | Runs `golangci-lint run ./...` | No `.golangci.yml`, tool not installed, or Makefile `check:` target mentions `golangci-lint` |
-| `lint-python.sh` | Runs `ruff check` and `ruff format --check` on Python projects | No ruff config, tool not installed, Bazel manages ruff via `@multitool`, or Makefile `check:` target mentions `ruff` |
-| `lint-shell.sh` | Runs `shellcheck` on staged `.sh` files | No staged `.sh` files, tool not installed, or Makefile `check:` target mentions `shellcheck` |
-| `lint-org.sh` | Runs `org-lint` on staged `.org` files | No staged `.org` files, tool not installed |
-| `lint-semgrep.sh` | Runs `semgrep scan` for static analysis | No `.semgrep.yml`, `.semgrep.yaml`, or `.semgrep/` directory; tool not installed; or Makefile `check:` target mentions `semgrep` |
-| `test-bazel.sh` | Runs affected Bazel tests via `bazel-affected-tests`, auto-fixes format tests | No `BUILD`/`BUILD.bazel` file, `bazel` not installed, or Makefile `check:` target mentions `bazel test` |
-| `check-workflow-actions.sh` | Rejects staged `.github/workflows/*.yml` that pin known actions below a minimum major version (e.g. `actions/checkout@v3`), or pin golangci-lint v1 via `golangci-lint-action` | No staged workflow files, or `git config hooks.checkactions false` |
+| Hook                        | What It Does                                                                                                                                                                   | Skip Conditions                                                                                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `check.sh`                  | Runs `make -j check` if available                                                                                                                                              | No Makefile with `check:` target                                                                                                        |
+| `check-large-files.sh`      | Rejects staged files exceeding a size threshold (default 1 MB)                                                                                                                 | Never (always runs); configure limit with `git config hooks.maxfilesize <bytes>`                                                        |
+| `check-whitespace.sh`       | Detects trailing whitespace and mixed line endings via `git diff-index --check`                                                                                                | Files handled by language formatters (*.go, *.py, *.proto, _.bzl, BUILD_) or marked `binary` / `-text` / `eol=crlf` in `.gitattributes` |
+| `check-i18n-sync.sh`        | Requires all language variants of a doc file to be staged together                                                                                                             | Opt-in: enable with `git config hooks.i18nsync true`                                                                                    |
+| `check-non-ascii.sh`        | Rejects non-ASCII filenames for portability                                                                                                                                    | `git config hooks.allownonascii true`                                                                                                   |
+| `lint-go.sh`                | Runs `golangci-lint run ./...`                                                                                                                                                 | No `.golangci.yml`, tool not installed, or Makefile `check:` target mentions `golangci-lint`                                            |
+| `lint-python.sh`            | Runs `ruff check` and `ruff format --check` on Python projects                                                                                                                 | No ruff config, tool not installed, Bazel manages ruff via `@multitool`, or Makefile `check:` target mentions `ruff`                    |
+| `lint-shell.sh`             | Runs `shellcheck` on staged `.sh` files                                                                                                                                        | No staged `.sh` files, tool not installed, or Makefile `check:` target mentions `shellcheck`                                            |
+| `lint-org.sh`               | Runs `org-lint` on staged `.org` files                                                                                                                                         | No staged `.org` files, tool not installed                                                                                              |
+| `lint-semgrep.sh`           | Runs `semgrep scan` for static analysis                                                                                                                                        | No `.semgrep.yml`, `.semgrep.yaml`, or `.semgrep/` directory; tool not installed; or Makefile `check:` target mentions `semgrep`        |
+| `test-bazel.sh`             | Runs affected Bazel tests via `bazel-affected-tests`, auto-fixes format tests                                                                                                  | No `BUILD`/`BUILD.bazel` file, `bazel` not installed, or Makefile `check:` target mentions `bazel test`                                 |
+| `check-workflow-actions.sh` | Rejects staged `.github/workflows/*.yml` that pin known actions below a minimum major version (e.g. `actions/checkout@v3`), or pin golangci-lint v1 via `golangci-lint-action` | No staged workflow files, or `git config hooks.checkactions false`                                                                      |
 
 ### Commit-msg Hooks (all run in parallel)
 
-| Hook | What It Does | Skip Conditions |
-|------|--------------|-----------------|
-| `check-subject-length.sh` | Enforces ≤72 character subject line | Never (always runs) |
-| `check-co-authored-by.sh` | Rejects `Co-Authored-By:` lines | Never (always runs) |
+| Hook                         | What It Does                                          | Skip Conditions     |
+| ---------------------------- | ----------------------------------------------------- | ------------------- |
+| `check-subject-length.sh`    | Enforces ≤72 character subject line                   | Never (always runs) |
+| `check-co-authored-by.sh`    | Rejects `Co-Authored-By:` lines                       | Never (always runs) |
 | `check-generated-comment.sh` | Rejects `Generated with ` markers (AI tool artifacts) | Never (always runs) |
 
 ### Post-checkout Hooks
 
-| Hook | What It Does | Skip Conditions |
-|------|--------------|-----------------|
+| Hook               | What It Does                                                                                                                                                              | Skip Conditions                                                                                                                                                                                                               |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `seed-worktree.sh` | Seeds untracked personal files (`.env`, `.bazelrc.user`, …) into a newly created `git worktree` by copying or symlinking the entries listed in a `worktree-seed` manifest | Not a fresh linked-worktree checkout (in-place branch switches, file checkouts, fresh clones, and submodules are all ignored); no manifest present; never clobbers existing files; skips symlinks and files over the size cap |
 
 ## Seeding New Worktrees
@@ -150,10 +150,10 @@ The hook only seeds entries that exist in the main tree and are **absent** in th
 
 Manifests are read from the main working tree's filesystem, so they work whether or not they are tracked. Both are layered when present, with the personal manifest winning on any path listed in both:
 
-| Location | Use |
-|----------|-----|
+| Location                         | Use                                                                                                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `<main-tree>/.git/worktree-seed` | **Personal, untracked** (preferred). Never shows in `git status`, no `.gitignore` entry needed, dies with the repo. |
-| `<main-tree>/.worktree-seed` | **Committed** team-wide baseline that everyone gets. |
+| `<main-tree>/.worktree-seed`     | **Committed** team-wide baseline that everyone gets.                                                                |
 
 ### Worked example: per-worktree `.bazelrc.user`
 
@@ -167,15 +167,15 @@ link    .bazelrc.user
 
 ## Configuration
 
-| Setting | Effect |
-|---------|--------|
-| `git config hooks.allownonascii true` | Allow non-ASCII filenames |
-| `git config hooks.i18nsync true` | Enable documentation sync check (requires all language variants staged together) |
-| `git config hooks.maxfilesize <bytes>` | Set large file threshold (default: 1048576 = 1 MB) |
-| `git config hooks.checkactions false` | Disable the outdated GitHub Actions check (enabled by default) |
-| `git config hooks.worktreeseedmaxsize <bytes>` | Set the per-file size cap for worktree seeding (default: 1048576 = 1 MB) |
-| Makefile `check:` target | Overrides tool-specific hooks when present |
-| `.NOTPARALLEL` in Makefile | Disables parallel `make -j` execution |
+| Setting                                        | Effect                                                                           |
+| ---------------------------------------------- | -------------------------------------------------------------------------------- |
+| `git config hooks.allownonascii true`          | Allow non-ASCII filenames                                                        |
+| `git config hooks.i18nsync true`               | Enable documentation sync check (requires all language variants staged together) |
+| `git config hooks.maxfilesize <bytes>`         | Set large file threshold (default: 1048576 = 1 MB)                               |
+| `git config hooks.checkactions false`          | Disable the outdated GitHub Actions check (enabled by default)                   |
+| `git config hooks.worktreeseedmaxsize <bytes>` | Set the per-file size cap for worktree seeding (default: 1048576 = 1 MB)         |
+| Makefile `check:` target                       | Overrides tool-specific hooks when present                                       |
+| `.NOTPARALLEL` in Makefile                     | Disables parallel `make -j` execution                                            |
 
 ## Disabling Hooks
 
@@ -198,12 +198,12 @@ patterns:
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [Getting Started](docs/getting-started.md) | Installation, setup, version pinning |
-| [Hooks Reference](docs/hooks-reference.md) | Detailed behavior and conditions for all hooks |
+| Document                                     | Description                                                    |
+| -------------------------------------------- | -------------------------------------------------------------- |
+| [Getting Started](docs/getting-started.md)   | Installation, setup, version pinning                           |
+| [Hooks Reference](docs/hooks-reference.md)   | Detailed behavior and conditions for all hooks                 |
 | [Configuration Guide](docs/configuration.md) | Namespaces, disabling hooks, environment variables, containers |
-| [Development Guide](docs/development.md) | Adding new hooks, coding conventions, testing |
+| [Development Guide](docs/development.md)     | Adding new hooks, coding conventions, testing                  |
 
 Translations: [한국어](docs/ko/) | [日本語](docs/ja/)
 

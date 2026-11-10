@@ -11,12 +11,12 @@ shared-githooks.
 brew install shfmt shellcheck yamllint biome
 ```
 
-| Tool | Purpose |
-|------|---------|
-| shfmt | Shell script formatting |
+| Tool       | Purpose                      |
+| ---------- | ---------------------------- |
+| shfmt      | Shell script formatting      |
 | shellcheck | Shell script static analysis |
-| yamllint | YAML file linting |
-| biome | Markdown and JSON formatting |
+| yamllint   | YAML file linting            |
+| biome      | Markdown and JSON formatting |
 
 ### Makefile Targets
 
@@ -146,17 +146,17 @@ exit 1
 
 ## Supported Hook Types
 
-| Hook | Trigger |
-|------|---------|
-| `pre-commit` | Before commit |
-| `commit-msg` | After commit message is written |
-| `post-commit` | After commit |
-| `pre-push` | Before push |
-| `post-checkout` | After checkout |
-| `post-merge` | After merge |
-| `pre-rebase` | Before rebase |
-| `pre-merge-commit` | Before merge commit |
-| `post-rewrite` | After history rewrite |
+| Hook               | Trigger                         |
+| ------------------ | ------------------------------- |
+| `pre-commit`       | Before commit                   |
+| `commit-msg`       | After commit message is written |
+| `post-commit`      | After commit                    |
+| `pre-push`         | Before push                     |
+| `post-checkout`    | After checkout                  |
+| `post-merge`       | After merge                     |
+| `pre-rebase`       | Before rebase                   |
+| `pre-merge-commit` | Before merge commit             |
+| `post-rewrite`     | After history rewrite           |
 
 ## Code Quality
 

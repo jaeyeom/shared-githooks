@@ -11,12 +11,12 @@
 brew install shfmt shellcheck yamllint biome
 ```
 
-| ツール | 用途 |
-|--------|------|
-| shfmt | シェルスクリプトフォーマット |
-| shellcheck | シェルスクリプト静的解析 |
-| yamllint | YAMLファイルリント |
-| biome | Markdown、JSONフォーマット |
+| ツール     | 用途                         |
+| ---------- | ---------------------------- |
+| shfmt      | シェルスクリプトフォーマット |
+| shellcheck | シェルスクリプト静的解析     |
+| yamllint   | YAMLファイルリント           |
+| biome      | Markdown、JSONフォーマット   |
 
 ### Makefileターゲット
 
@@ -147,17 +147,17 @@ exit 1
 
 ## サポートされるHookタイプ
 
-| Hook | 実行タイミング |
-|------|--------------|
-| `pre-commit` | コミット前 |
-| `commit-msg` | コミットメッセージ作成後 |
-| `post-commit` | コミット後 |
-| `pre-push` | プッシュ前 |
-| `post-checkout` | チェックアウト後 |
-| `post-merge` | マージ後 |
-| `pre-rebase` | リベース前 |
-| `pre-merge-commit` | マージコミット前 |
-| `post-rewrite` | 履歴書き換え後 |
+| Hook               | 実行タイミング           |
+| ------------------ | ------------------------ |
+| `pre-commit`       | コミット前               |
+| `commit-msg`       | コミットメッセージ作成後 |
+| `post-commit`      | コミット後               |
+| `pre-push`         | プッシュ前               |
+| `post-checkout`    | チェックアウト後         |
+| `post-merge`       | マージ後                 |
+| `pre-rebase`       | リベース前               |
+| `pre-merge-commit` | マージコミット前         |
+| `post-rewrite`     | 履歴書き換え後           |
 
 ## コード品質
 

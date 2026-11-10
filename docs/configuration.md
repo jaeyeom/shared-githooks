@@ -49,12 +49,12 @@ Use `.githooks/.envs.yaml` to set environment variables during hook execution.
 
 Some hooks can be controlled via Git config values:
 
-| Config | Default | Description |
-|--------|---------|-------------|
-| `hooks.allownonascii` | `false` | Set to `true` to allow non-ASCII filenames |
-| `hooks.i18nsync` | `false` | Set to `true` to require all language variants staged together |
-| `hooks.maxfilesize` | `1048576` (1 MB) | Maximum file size in bytes for staged files |
-| `hooks.checkactions` | `true` | Set to `false` to disable the outdated GitHub Actions check for `.github/workflows/` files |
+| Config                | Default          | Description                                                                                |
+| --------------------- | ---------------- | ------------------------------------------------------------------------------------------ |
+| `hooks.allownonascii` | `false`          | Set to `true` to allow non-ASCII filenames                                                 |
+| `hooks.i18nsync`      | `false`          | Set to `true` to require all language variants staged together                             |
+| `hooks.maxfilesize`   | `1048576` (1 MB) | Maximum file size in bytes for staged files                                                |
+| `hooks.checkactions`  | `true`           | Set to `false` to disable the outdated GitHub Actions check for `.github/workflows/` files |
 
 ```bash
 # Allow non-ASCII filenames
@@ -74,13 +74,13 @@ git config hooks.checkactions false
 
 Environment variables automatically set by Githooks during hook execution:
 
-| Variable | Description |
-|----------|-------------|
-| `STAGED_FILES` | Newline-separated list of staged files (pre-commit only) |
-| `STAGED_FILES_FILE` | Path to a file containing null-separated staged paths |
-| `GITHOOKS_OS` | Operating system (`linux`, `darwin`, `windows`) |
-| `GITHOOKS_ARCH` | Architecture (`amd64`, `arm64`) |
-| `GITHOOKS_CONTAINER_RUN` | Set when running inside a container |
+| Variable                 | Description                                              |
+| ------------------------ | -------------------------------------------------------- |
+| `STAGED_FILES`           | Newline-separated list of staged files (pre-commit only) |
+| `STAGED_FILES_FILE`      | Path to a file containing null-separated staged paths    |
+| `GITHOOKS_OS`            | Operating system (`linux`, `darwin`, `windows`)          |
+| `GITHOOKS_ARCH`          | Architecture (`amd64`, `arm64`)                          |
+| `GITHOOKS_CONTAINER_RUN` | Set when running inside a container                      |
 
 ## Containerized Hook Execution
 
@@ -127,14 +127,14 @@ args:
 
 ### Variable Substitution Patterns
 
-| Pattern | Source |
-|---------|--------|
-| `${env:VAR}` | Environment variable |
-| `${git:VAR}` | Git config (auto-scoped) |
-| `${git-l:VAR}` | Local Git config |
-| `${git-g:VAR}` | Global Git config |
-| `${git-s:VAR}` | System Git config |
-| `${!env:VAR}` | Required environment variable (fails if missing) |
+| Pattern        | Source                                           |
+| -------------- | ------------------------------------------------ |
+| `${env:VAR}`   | Environment variable                             |
+| `${git:VAR}`   | Git config (auto-scoped)                         |
+| `${git-l:VAR}` | Local Git config                                 |
+| `${git-g:VAR}` | Global Git config                                |
+| `${git-s:VAR}` | System Git config                                |
+| `${!env:VAR}`  | Required environment variable (fails if missing) |
 
 ## Parallel Execution Settings
 
