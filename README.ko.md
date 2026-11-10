@@ -96,33 +96,33 @@ test:
 
 ### Pre-commit Hooks (모두 병렬 실행)
 
-| Hook | 기능 | 스킵 조건 |
-|------|------|----------|
-| `check.sh` | `make -j check` 실행 (가능한 경우) | `check:` 타겟이 있는 Makefile 없음 |
-| `check-large-files.sh` | 크기 임계값 초과 스테이징 파일 거부 (기본 1 MB) | 항상 실행; `git config hooks.maxfilesize <bytes>`로 제한 설정 |
-| `check-whitespace.sh` | `git diff-index --check`로 trailing whitespace 및 혼합 줄 끝 검출 | 언어 포매터가 처리하는 파일 (*.go, *.py, *.proto, *.bzl, BUILD*), 또는 `.gitattributes`에서 `binary` / `-text` / `eol=crlf`로 표시된 파일 |
-| `check-i18n-sync.sh` | 문서 파일 변경 시 모든 언어 변형이 함께 스테이징되어야 함 | 옵트인: `git config hooks.i18nsync true`로 활성화 |
-| `check-non-ascii.sh` | 이식성을 위해 비ASCII 파일명 거부 | `git config hooks.allownonascii true` |
-| `lint-go.sh` | `golangci-lint run ./...` 실행 | `.golangci.yml` 없음, 도구 미설치, 또는 Makefile `check:` 타겟이 `golangci-lint` 언급 |
-| `lint-python.sh` | Python 프로젝트에서 `ruff check` 및 `ruff format --check` 실행 | ruff 설정 없음, 도구 미설치, Bazel이 `@multitool`로 ruff 관리, 또는 Makefile `check:` 타겟이 `ruff` 언급 |
-| `lint-shell.sh` | 스테이징된 `.sh` 파일에 `shellcheck` 실행 | 스테이징된 `.sh` 파일 없음, 도구 미설치, 또는 Makefile `check:` 타겟이 `shellcheck` 언급 |
-| `lint-org.sh` | 스테이징된 `.org` 파일에 `org-lint` 실행 | 스테이징된 `.org` 파일 없음, 도구 미설치 |
-| `lint-semgrep.sh` | 정적 분석을 위한 `semgrep scan` 실행 | `.semgrep.yml`, `.semgrep.yaml`, `.semgrep/` 디렉토리 없음; 도구 미설치; 또는 Makefile `check:` 타겟이 `semgrep` 언급 |
-| `test-bazel.sh` | `bazel-affected-tests`로 영향받는 Bazel 테스트 실행, 포맷 테스트 자동 수정 | `BUILD`/`BUILD.bazel` 파일 없음, `bazel` 미설치, 또는 Makefile `check:` 타겟이 `bazel test` 언급 |
-| `check-workflow-actions.sh` | 스테이징된 `.github/workflows/*.yml`에서 알려진 액션의 메이저 버전이 최소치 미만이거나(`actions/checkout@v3` 등) `golangci-lint-action`이 golangci-lint v1을 고정하면 거부 | 스테이징된 워크플로 파일 없음, 또는 `git config hooks.checkactions false` |
+| Hook                        | 기능                                                                                                                                                                       | 스킵 조건                                                                                                                                 |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `check.sh`                  | `make -j check` 실행 (가능한 경우)                                                                                                                                         | `check:` 타겟이 있는 Makefile 없음                                                                                                        |
+| `check-large-files.sh`      | 크기 임계값 초과 스테이징 파일 거부 (기본 1 MB)                                                                                                                            | 항상 실행; `git config hooks.maxfilesize <bytes>`로 제한 설정                                                                             |
+| `check-whitespace.sh`       | `git diff-index --check`로 trailing whitespace 및 혼합 줄 끝 검출                                                                                                          | 언어 포매터가 처리하는 파일 (*.go, *.py, *.proto, _.bzl, BUILD_), 또는 `.gitattributes`에서 `binary` / `-text` / `eol=crlf`로 표시된 파일 |
+| `check-i18n-sync.sh`        | 문서 파일 변경 시 모든 언어 변형이 함께 스테이징되어야 함                                                                                                                  | 옵트인: `git config hooks.i18nsync true`로 활성화                                                                                         |
+| `check-non-ascii.sh`        | 이식성을 위해 비ASCII 파일명 거부                                                                                                                                          | `git config hooks.allownonascii true`                                                                                                     |
+| `lint-go.sh`                | `golangci-lint run ./...` 실행                                                                                                                                             | `.golangci.yml` 없음, 도구 미설치, 또는 Makefile `check:` 타겟이 `golangci-lint` 언급                                                     |
+| `lint-python.sh`            | Python 프로젝트에서 `ruff check` 및 `ruff format --check` 실행                                                                                                             | ruff 설정 없음, 도구 미설치, Bazel이 `@multitool`로 ruff 관리, 또는 Makefile `check:` 타겟이 `ruff` 언급                                  |
+| `lint-shell.sh`             | 스테이징된 `.sh` 파일에 `shellcheck` 실행                                                                                                                                  | 스테이징된 `.sh` 파일 없음, 도구 미설치, 또는 Makefile `check:` 타겟이 `shellcheck` 언급                                                  |
+| `lint-org.sh`               | 스테이징된 `.org` 파일에 `org-lint` 실행                                                                                                                                   | 스테이징된 `.org` 파일 없음, 도구 미설치                                                                                                  |
+| `lint-semgrep.sh`           | 정적 분석을 위한 `semgrep scan` 실행                                                                                                                                       | `.semgrep.yml`, `.semgrep.yaml`, `.semgrep/` 디렉토리 없음; 도구 미설치; 또는 Makefile `check:` 타겟이 `semgrep` 언급                     |
+| `test-bazel.sh`             | `bazel-affected-tests`로 영향받는 Bazel 테스트 실행, 포맷 테스트 자동 수정                                                                                                 | `BUILD`/`BUILD.bazel` 파일 없음, `bazel` 미설치, 또는 Makefile `check:` 타겟이 `bazel test` 언급                                          |
+| `check-workflow-actions.sh` | 스테이징된 `.github/workflows/*.yml`에서 알려진 액션의 메이저 버전이 최소치 미만이거나(`actions/checkout@v3` 등) `golangci-lint-action`이 golangci-lint v1을 고정하면 거부 | 스테이징된 워크플로 파일 없음, 또는 `git config hooks.checkactions false`                                                                 |
 
 ### Commit-msg Hooks (모두 병렬 실행)
 
-| Hook | 기능 | 스킵 조건 |
-|------|------|----------|
-| `check-subject-length.sh` | 72자 이하 제목 줄 강제 | 항상 실행 |
-| `check-co-authored-by.sh` | `Co-Authored-By:` 줄 거부 | 항상 실행 |
+| Hook                         | 기능                                           | 스킵 조건 |
+| ---------------------------- | ---------------------------------------------- | --------- |
+| `check-subject-length.sh`    | 72자 이하 제목 줄 강제                         | 항상 실행 |
+| `check-co-authored-by.sh`    | `Co-Authored-By:` 줄 거부                      | 항상 실행 |
 | `check-generated-comment.sh` | `Generated with ` 마커 (AI 도구 아티팩트) 거부 | 항상 실행 |
 
 ### Post-checkout Hooks
 
-| Hook | 기능 | 스킵 조건 |
-|------|------|----------|
+| Hook               | 기능                                                                                                                                                    | 스킵 조건                                                                                                                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `seed-worktree.sh` | 추적되지 않는 개인 파일(`.env`, `.bazelrc.user` 등)을 `worktree-seed` 매니페스트에 나열된 항목에 따라 복사하거나 심볼릭 링크로 새 `git worktree`에 시딩 | 새로 만든 연결 worktree 체크아웃이 아님(제자리 브랜치 전환, 파일 체크아웃, 새 클론, 서브모듈은 모두 무시); 매니페스트 없음; 기존 파일은 절대 덮어쓰지 않음; 심볼릭 링크와 크기 상한 초과 파일은 건너뜀 |
 
 ## 새 Worktree 시딩
@@ -150,10 +150,10 @@ hook은 메인 트리에 존재하면서 새 worktree에는 **없는** 항목만
 
 매니페스트는 메인 작업 트리의 파일 시스템에서 읽으므로 추적 여부와 무관하게 동작합니다. 둘 다 있으면 계층화되며, 양쪽에 모두 나열된 경로는 개인 매니페스트가 우선합니다:
 
-| 위치 | 용도 |
-|------|------|
+| 위치                             | 용도                                                                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `<main-tree>/.git/worktree-seed` | **개인용, 추적 안 됨** (권장). `git status`에 나타나지 않고, `.gitignore` 항목도 필요 없으며, 저장소와 운명을 함께합니다. |
-| `<main-tree>/.worktree-seed` | 모두가 받는 **커밋된** 팀 공통 기본값. |
+| `<main-tree>/.worktree-seed`     | 모두가 받는 **커밋된** 팀 공통 기본값.                                                                                    |
 
 ### 실전 예제: worktree별 `.bazelrc.user`
 
@@ -167,15 +167,15 @@ link    .bazelrc.user
 
 ## 설정
 
-| 설정 | 효과 |
-|------|------|
-| `git config hooks.allownonascii true` | 비ASCII 파일명 허용 |
-| `git config hooks.i18nsync true` | 문서 동기화 검사 활성화 (모든 언어 변형이 함께 스테이징되어야 함) |
-| `git config hooks.maxfilesize <bytes>` | 대용량 파일 임계값 설정 (기본: 1048576 = 1 MB) |
-| `git config hooks.checkactions false` | 오래된 GitHub Actions 검사 비활성화 (기본 활성화) |
-| `git config hooks.worktreeseedmaxsize <bytes>` | worktree 시딩의 파일당 크기 상한 설정 (기본: 1048576 = 1 MB) |
-| Makefile `check:` 타겟 | 존재 시 도구별 hooks를 대체 |
-| Makefile의 `.NOTPARALLEL` | 병렬 `make -j` 실행 비활성화 |
+| 설정                                           | 효과                                                              |
+| ---------------------------------------------- | ----------------------------------------------------------------- |
+| `git config hooks.allownonascii true`          | 비ASCII 파일명 허용                                               |
+| `git config hooks.i18nsync true`               | 문서 동기화 검사 활성화 (모든 언어 변형이 함께 스테이징되어야 함) |
+| `git config hooks.maxfilesize <bytes>`         | 대용량 파일 임계값 설정 (기본: 1048576 = 1 MB)                    |
+| `git config hooks.checkactions false`          | 오래된 GitHub Actions 검사 비활성화 (기본 활성화)                 |
+| `git config hooks.worktreeseedmaxsize <bytes>` | worktree 시딩의 파일당 크기 상한 설정 (기본: 1048576 = 1 MB)      |
+| Makefile `check:` 타겟                         | 존재 시 도구별 hooks를 대체                                       |
+| Makefile의 `.NOTPARALLEL`                      | 병렬 `make -j` 실행 비활성화                                      |
 
 ## Hooks 비활성화
 
@@ -198,12 +198,12 @@ patterns:
 
 ## 문서
 
-| 문서 | 설명 |
-|------|-----|
-| [시작하기](docs/ko/getting-started.md) | 설치, 설정, 버전 고정 |
-| [Hooks 레퍼런스](docs/ko/hooks-reference.md) | 모든 hook의 상세 동작과 조건 |
-| [설정 가이드](docs/ko/configuration.md) | 네임스페이스, 비활성화, 환경변수, 컨테이너 |
-| [개발 가이드](docs/ko/development.md) | 새 hook 추가, 코딩 규칙, 테스트 |
+| 문서                                         | 설명                                       |
+| -------------------------------------------- | ------------------------------------------ |
+| [시작하기](docs/ko/getting-started.md)       | 설치, 설정, 버전 고정                      |
+| [Hooks 레퍼런스](docs/ko/hooks-reference.md) | 모든 hook의 상세 동작과 조건               |
+| [설정 가이드](docs/ko/configuration.md)      | 네임스페이스, 비활성화, 환경변수, 컨테이너 |
+| [개발 가이드](docs/ko/development.md)        | 새 hook 추가, 코딩 규칙, 테스트            |
 
 ## 개발
 

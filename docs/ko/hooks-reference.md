@@ -5,10 +5,10 @@
 
 ## 개요
 
-| Hook 타입 | 스크립트 수 | 실행 방식 |
-|-----------|------------|----------|
-| pre-commit | 12 | 병렬 (`checks/` 디렉토리) |
-| commit-msg | 3 | 병렬 (`checks/` 디렉토리) |
+| Hook 타입  | 스크립트 수 | 실행 방식                 |
+| ---------- | ----------- | ------------------------- |
+| pre-commit | 12          | 병렬 (`checks/` 디렉토리) |
+| commit-msg | 3           | 병렬 (`checks/` 디렉토리) |
 
 모든 hook 스크립트는 `set -euo pipefail`로 시작하며, 의존 도구가 없을 경우
 조용히 건너뜁니다.
@@ -25,10 +25,12 @@
 프로젝트의 Makefile에 `check` 타겟이 있으면 `make -j check`을 실행합니다.
 
 **동작 조건:**
+
 - 프로젝트 루트에 `Makefile`이 존재
 - Makefile에 `check:` 타겟이 정의되어 있음
 
 **건너뛰는 조건:**
+
 - `Makefile`이 없음
 - `check:` 타겟이 없음
 
@@ -49,6 +51,7 @@ git config hooks.maxfilesize <bytes>
 ```
 
 **동작 방식:**
+
 - 스테이징된 모든 파일(Added/Changed/Modified)의 크기를 확인
 - 임계값 초과 시 파일명과 크기를 표시하고 커밋을 중단
 - 항상 실행됨 (건너뛰는 조건 없음)
@@ -60,11 +63,13 @@ git config hooks.maxfilesize <bytes>
 trailing whitespace, space-before-tab 등 공백 관련 오류를 검출합니다.
 
 **동작 방식:**
+
 - `git diff-index --check --cached`를 사용하여 스테이징된 변경사항 검사
 - 언어별 포매터가 처리하는 파일은 제외
 - `.gitattributes`에서 `binary`, `-text`, `eol=crlf`로 지정된 파일도 제외
 
 **제외 파일 확장자:**
+
 - `.go` — gofmt가 처리
 - `.py` — black/ruff 등이 처리
 - `.proto` — clang-format이 처리
@@ -102,14 +107,17 @@ git config hooks.i18nsync true
 ```
 
 **언어 감지:**
+
 - 추적되는 `README.<lang>.md` 파일에서 언어를 자동 감지
 - `README.<lang>.md` 파일이 없으면 아무 작업도 하지 않음
 
 **추적 파일 그룹:**
+
 - `README.md` ↔ `README.<lang>.md` (모든 변형이 함께 스테이징되어야 함)
 - `docs/*.md` ↔ `docs/<lang>/*.md` (번역 대응 파일이 존재할 때만 적용)
 
 **건너뛰는 조건:**
+
 - `hooks.i18nsync`가 `true`로 설정되지 않음 (기본값)
 - 저장소에 `README.<lang>.md` 파일이 추적되지 않음
 - `docs/` 파일에 번역 대응 파일이 없음
@@ -134,10 +142,12 @@ git config hooks.allownonascii true
 Go 프로젝트에서 `golangci-lint`를 실행합니다.
 
 **동작 조건:**
+
 - 프로젝트 루트에 `.golangci.yml`이 존재
 - `golangci-lint` 명령이 설치되어 있음
 
 **건너뛰는 조건:**
+
 - `.golangci.yml`이 없음
 - `golangci-lint`가 설치되지 않음 (경고 메시지 출력)
 - Makefile의 `check` 타겟에서 이미 `golangci-lint`를 실행하는 경우 (중복 방지)
@@ -152,10 +162,12 @@ Go 프로젝트에서 `golangci-lint`를 실행합니다.
 Python 프로젝트에서 `ruff check`과 `ruff format --check`을 실행합니다.
 
 **동작 조건:**
+
 - `ruff.toml`, `.ruff.toml`, 또는 `pyproject.toml`에 `[tool.ruff]` 섹션이 존재
 - `ruff` 명령이 설치되어 있음
 
 **건너뛰는 조건:**
+
 - ruff 설정 파일이 없음
 - `ruff`가 설치되지 않음 (경고 메시지 출력)
 - Makefile의 `check` 타겟에서 이미 `ruff`를 실행하는 경우 (중복 방지)
@@ -168,10 +180,12 @@ Python 프로젝트에서 `ruff check`과 `ruff format --check`을 실행합니�
 스테이징된 `.sh` 파일에 대해 `shellcheck`를 실행합니다.
 
 **동작 조건:**
+
 - `shellcheck` 명령이 설치되어 있음
 - 스테이징된 `.sh` 파일이 존재 (Added/Changed/Modified)
 
 **건너뛰는 조건:**
+
 - `shellcheck`가 설치되지 않음 (경고 메시지 출력)
 - 스테이징된 `.sh` 파일이 없음
 - Makefile의 `check` 타겟에서 이미 `shellcheck`를 실행하는 경우 (중복 방지)
@@ -183,10 +197,12 @@ Python 프로젝트에서 `ruff check`과 `ruff format --check`을 실행합니�
 스테이징된 `.org` 파일에 대해 `org-lint`를 실행합니다.
 
 **동작 조건:**
+
 - `org-lint` 명령이 설치되어 있음
 - 스테이징된 `.org` 파일이 존재 (Added/Changed/Modified)
 
 **건너뛰는 조건:**
+
 - `org-lint`가 설치되지 않음 (조용히 건너뜀)
 - 스테이징된 `.org` 파일이 없음
 
@@ -197,10 +213,12 @@ Python 프로젝트에서 `ruff check`과 `ruff format --check`을 실행합니�
 Semgrep 설정이 있는 프로젝트에서 `semgrep scan`을 실행합니다.
 
 **동작 조건:**
+
 - `.semgrep.yml`, `.semgrep.yaml`, 또는 `.semgrep/` 디렉토리가 존재
 - `semgrep` 명령이 설치되어 있음
 
 **건너뛰는 조건:**
+
 - Semgrep 설정 파일/디렉토리가 없음
 - `semgrep`가 설치되지 않음 (경고 메시지 출력)
 - Makefile의 `check` 타겟에서 이미 `semgrep`를 실행하는 경우 (중복 방지)
@@ -212,24 +230,29 @@ Semgrep 설정이 있는 프로젝트에서 `semgrep scan`을 실행합니다.
 Bazel 프로젝트에서 변경에 영향받는 테스트를 실행합니다.
 
 **동작 조건:**
+
 - 프로젝트 루트에 `BUILD` 또는 `BUILD.bazel`이 존재
 - `bazel` 명령이 설치되어 있음
 
 **건너뛰는 조건:**
+
 - `BUILD`/`BUILD.bazel`이 없음
 - `bazel`이 설치되지 않음 (경고 메시지 출력)
 - Makefile의 `check` 타겟에서 이미 `bazel test`를 실행하는 경우 (중복 방지)
 
 **스마트 테스트 선택:**
+
 - `bazel-affected-tests` 바이너리가 있으면 변경에 영향받는 테스트만 선택적 실행
 - 없으면 `bazel test //...:all`로 전체 테스트 실행
 
 **포맷 테스트 특별 처리:**
+
 - `//tools/format:` 테스트가 실패하면 자동으로 `bazel run //:format`을
   실행하여 코드를 포맷팅한 뒤 커밋을 중단
 - 개발자가 포맷팅된 코드를 확인 후 다시 커밋 가능
 
 **플랫폼 제한:**
+
 - macOS(Darwin)에서는 포맷 테스트 외의 테스트를 건너뜀
 
 ---
@@ -249,9 +272,11 @@ git config hooks.checkactions false
 ```
 
 **동작 조건:**
+
 - 스테이징된 파일 중 `.github/workflows/*.{yml,yaml}`이 하나 이상 존재
 
 **건너뛰는 조건:**
+
 - 스테이징된 워크플로 파일이 없음
 - `hooks.checkactions`가 `false`로 설정됨
 - `uses:` 참조가 SHA(`@abc123...`) 또는 브랜치(`@main`)로 고정됨
@@ -259,29 +284,29 @@ git config hooks.checkactions false
 
 **강제되는 최소 메이저 버전:**
 
-| 액션 | 최소 |
-|------|------|
-| `actions/checkout` | v4 |
-| `actions/setup-go` | v5 |
-| `actions/setup-node` | v4 |
-| `actions/setup-python` | v5 |
-| `actions/setup-java` | v4 |
-| `actions/setup-dotnet` | v4 |
-| `actions/cache` | v4 |
-| `actions/upload-artifact` | v4 |
-| `actions/download-artifact` | v4 |
-| `actions/configure-pages` | v5 |
-| `actions/deploy-pages` | v4 |
-| `actions/upload-pages-artifact` | v3 |
-| `golangci/golangci-lint-action` | v6 |
-| `docker/build-push-action` | v6 |
-| `docker/login-action` | v3 |
-| `docker/setup-buildx-action` | v3 |
-| `docker/setup-qemu-action` | v3 |
-| `docker/metadata-action` | v5 |
-| `codecov/codecov-action` | v4 |
-| `softprops/action-gh-release` | v2 |
-| `github/codeql-action` | v3 |
+| 액션                            | 최소 |
+| ------------------------------- | ---- |
+| `actions/checkout`              | v4   |
+| `actions/setup-go`              | v5   |
+| `actions/setup-node`            | v4   |
+| `actions/setup-python`          | v5   |
+| `actions/setup-java`            | v4   |
+| `actions/setup-dotnet`          | v4   |
+| `actions/cache`                 | v4   |
+| `actions/upload-artifact`       | v4   |
+| `actions/download-artifact`     | v4   |
+| `actions/configure-pages`       | v5   |
+| `actions/deploy-pages`          | v4   |
+| `actions/upload-pages-artifact` | v3   |
+| `golangci/golangci-lint-action` | v6   |
+| `docker/build-push-action`      | v6   |
+| `docker/login-action`           | v3   |
+| `docker/setup-buildx-action`    | v3   |
+| `docker/setup-qemu-action`      | v3   |
+| `docker/metadata-action`        | v5   |
+| `codecov/codecov-action`        | v4   |
+| `softprops/action-gh-release`   | v2   |
+| `github/codeql-action`          | v3   |
 
 **golangci-lint 바이너리 버전:** `golangci/golangci-lint-action` 스텝
 내부의 `version:` 입력은 v2 이상으로 해석되어야 합니다. v1.x 고정은
@@ -339,7 +364,7 @@ AI 도구가 자동으로 추가하는 생성 마커를 제거하도록 유도�
 git config hooks.worktreeseedmaxsize <bytes>
 ```
 
-**작동 시점:** 새 *연결* worktree로의 새로운 체크아웃에서만 작동합니다. hook은
+**작동 시점:** 새 _연결_ worktree로의 새로운 체크아웃에서만 작동합니다. hook은
 `$1=old-HEAD $2=new-HEAD $3=flag`를 받으며 다음 조건을 모두 만족할 때만
 실행됩니다:
 
@@ -370,6 +395,7 @@ copy    config/*.local.yaml
 - `<main-tree>/.worktree-seed` — 커밋된 팀 공통 기본값.
 
 **동작:**
+
 - 메인 트리에 존재하면서 새 worktree에는 없는 항목만 시딩 (멱등적, 덮어쓰지
   않음)
 - 글롭은 메인 트리 기준으로 확장
@@ -377,6 +403,7 @@ copy    config/*.local.yaml
 - 메인 작업 트리는 `git worktree list --porcelain`의 첫 항목으로 해석
 
 **주의사항:**
+
 - hook이 활성화되어 있어야 작동; CI 및 기타 hook 없는 체크아웃에는 아무것도
   적용되지 않음 (CI는 worktree를 만들지 않으므로 문제없음)
 - `git worktree add --no-checkout`는 `post-checkout`을 발동시키지 않음

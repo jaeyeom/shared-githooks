@@ -45,24 +45,24 @@ args:
   - "${git:some.config}"
 ```
 
-| Pattern | Source |
-|---------|--------|
-| `${env:VAR}` | Environment variable |
-| `${git:VAR}` | Git config (auto-scoped) |
-| `${git-l:VAR}` | Local Git config |
-| `${git-g:VAR}` | Global Git config |
-| `${git-s:VAR}` | System Git config |
-| `${!env:VAR}` | Mandatory (fails if missing) |
+| Pattern        | Source                       |
+| -------------- | ---------------------------- |
+| `${env:VAR}`   | Environment variable         |
+| `${git:VAR}`   | Git config (auto-scoped)     |
+| `${git-l:VAR}` | Local Git config             |
+| `${git-g:VAR}` | Global Git config            |
+| `${git-s:VAR}` | System Git config            |
+| `${!env:VAR}`  | Mandatory (fails if missing) |
 
 ### Environment Variables Available to Hooks
 
-| Variable | Description |
-|----------|-------------|
-| `STAGED_FILES` | Newline-separated list of staged files (pre-commit only) |
-| `STAGED_FILES_FILE` | Path to file with null-separated staged paths |
-| `GITHOOKS_OS` | Operating system (`linux`, `darwin`, `windows`) |
-| `GITHOOKS_ARCH` | Architecture (`amd64`, `arm64`) |
-| `GITHOOKS_CONTAINER_RUN` | Set when running inside a container |
+| Variable                 | Description                                              |
+| ------------------------ | -------------------------------------------------------- |
+| `STAGED_FILES`           | Newline-separated list of staged files (pre-commit only) |
+| `STAGED_FILES_FILE`      | Path to file with null-separated staged paths            |
+| `GITHOOKS_OS`            | Operating system (`linux`, `darwin`, `windows`)          |
+| `GITHOOKS_ARCH`          | Architecture (`amd64`, `arm64`)                          |
+| `GITHOOKS_CONTAINER_RUN` | Set when running inside a container                      |
 
 ### Namespace
 

@@ -96,33 +96,33 @@ test:
 
 ### Pre-commit Hooks（すべて並列実行）
 
-| Hook | 機能 | スキップ条件 |
-|------|------|-------------|
-| `check.sh` | `make -j check`を実行（可能な場合） | `check:`ターゲットのあるMakefileなし |
-| `check-large-files.sh` | サイズ閾値を超えるステージファイルを拒否（デフォルト1 MB） | 常に実行；`git config hooks.maxfilesize <bytes>`で制限設定 |
-| `check-whitespace.sh` | `git diff-index --check`でtrailing whitespaceと混合改行を検出 | 言語フォーマッターが処理するファイル（*.go、*.py、*.proto、*.bzl、BUILD*）、または`.gitattributes`で`binary` / `-text` / `eol=crlf`と指定されたファイル |
-| `check-i18n-sync.sh` | ドキュメントファイル変更時にすべての言語バリアントのステージが必要 | オプトイン：`git config hooks.i18nsync true`で有効化 |
-| `check-non-ascii.sh` | 移植性のため非ASCIIファイル名を拒否 | `git config hooks.allownonascii true` |
-| `lint-go.sh` | `golangci-lint run ./...`を実行 | `.golangci.yml`なし、ツール未インストール、またはMakefile `check:`ターゲットが`golangci-lint`に言及 |
-| `lint-python.sh` | Pythonプロジェクトで`ruff check`と`ruff format --check`を実行 | ruff設定なし、ツール未インストール、Bazelが`@multitool`でruffを管理、またはMakefile `check:`ターゲットが`ruff`に言及 |
-| `lint-shell.sh` | ステージされた`.sh`ファイルに`shellcheck`を実行 | ステージされた`.sh`ファイルなし、ツール未インストール、またはMakefile `check:`ターゲットが`shellcheck`に言及 |
-| `lint-org.sh` | ステージされた`.org`ファイルに`org-lint`を実行 | ステージされた`.org`ファイルなし、ツール未インストール |
-| `lint-semgrep.sh` | 静的解析のため`semgrep scan`を実行 | `.semgrep.yml`、`.semgrep.yaml`、`.semgrep/`ディレクトリなし；ツール未インストール；またはMakefile `check:`ターゲットが`semgrep`に言及 |
-| `test-bazel.sh` | `bazel-affected-tests`で影響を受けるBazelテストを実行、フォーマットテスト自動修正 | `BUILD`/`BUILD.bazel`ファイルなし、`bazel`未インストール、またはMakefile `check:`ターゲットが`bazel test`に言及 |
-| `check-workflow-actions.sh` | ステージされた`.github/workflows/*.yml`で既知のアクションのメジャーバージョンが最小値未満（`actions/checkout@v3`など）、または`golangci-lint-action`がgolangci-lint v1を指定している場合に拒否 | ステージされたワークフローファイルなし、または`git config hooks.checkactions false` |
+| Hook                        | 機能                                                                                                                                                                                           | スキップ条件                                                                                                                                            |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `check.sh`                  | `make -j check`を実行（可能な場合）                                                                                                                                                            | `check:`ターゲットのあるMakefileなし                                                                                                                    |
+| `check-large-files.sh`      | サイズ閾値を超えるステージファイルを拒否（デフォルト1 MB）                                                                                                                                     | 常に実行；`git config hooks.maxfilesize <bytes>`で制限設定                                                                                              |
+| `check-whitespace.sh`       | `git diff-index --check`でtrailing whitespaceと混合改行を検出                                                                                                                                  | 言語フォーマッターが処理するファイル（_.go、_.py、_.proto、_.bzl、BUILD*）、または`.gitattributes`で`binary` / `-text` / `eol=crlf`と指定されたファイル |
+| `check-i18n-sync.sh`        | ドキュメントファイル変更時にすべての言語バリアントのステージが必要                                                                                                                             | オプトイン：`git config hooks.i18nsync true`で有効化                                                                                                    |
+| `check-non-ascii.sh`        | 移植性のため非ASCIIファイル名を拒否                                                                                                                                                            | `git config hooks.allownonascii true`                                                                                                                   |
+| `lint-go.sh`                | `golangci-lint run ./...`を実行                                                                                                                                                                | `.golangci.yml`なし、ツール未インストール、またはMakefile `check:`ターゲットが`golangci-lint`に言及                                                     |
+| `lint-python.sh`            | Pythonプロジェクトで`ruff check`と`ruff format --check`を実行                                                                                                                                  | ruff設定なし、ツール未インストール、Bazelが`@multitool`でruffを管理、またはMakefile `check:`ターゲットが`ruff`に言及                                    |
+| `lint-shell.sh`             | ステージされた`.sh`ファイルに`shellcheck`を実行                                                                                                                                                | ステージされた`.sh`ファイルなし、ツール未インストール、またはMakefile `check:`ターゲットが`shellcheck`に言及                                            |
+| `lint-org.sh`               | ステージされた`.org`ファイルに`org-lint`を実行                                                                                                                                                 | ステージされた`.org`ファイルなし、ツール未インストール                                                                                                  |
+| `lint-semgrep.sh`           | 静的解析のため`semgrep scan`を実行                                                                                                                                                             | `.semgrep.yml`、`.semgrep.yaml`、`.semgrep/`ディレクトリなし；ツール未インストール；またはMakefile `check:`ターゲットが`semgrep`に言及                  |
+| `test-bazel.sh`             | `bazel-affected-tests`で影響を受けるBazelテストを実行、フォーマットテスト自動修正                                                                                                              | `BUILD`/`BUILD.bazel`ファイルなし、`bazel`未インストール、またはMakefile `check:`ターゲットが`bazel test`に言及                                         |
+| `check-workflow-actions.sh` | ステージされた`.github/workflows/*.yml`で既知のアクションのメジャーバージョンが最小値未満（`actions/checkout@v3`など）、または`golangci-lint-action`がgolangci-lint v1を指定している場合に拒否 | ステージされたワークフローファイルなし、または`git config hooks.checkactions false`                                                                     |
 
 ### Commit-msg Hooks（すべて並列実行）
 
-| Hook | 機能 | スキップ条件 |
-|------|------|-------------|
-| `check-subject-length.sh` | 72文字以下のタイトル行を強制 | 常に実行 |
-| `check-co-authored-by.sh` | `Co-Authored-By:`行を拒否 | 常に実行 |
-| `check-generated-comment.sh` | `Generated with `マーカー（AIツールアーティファクト）を拒否 | 常に実行 |
+| Hook                         | 機能                                                        | スキップ条件 |
+| ---------------------------- | ----------------------------------------------------------- | ------------ |
+| `check-subject-length.sh`    | 72文字以下のタイトル行を強制                                | 常に実行     |
+| `check-co-authored-by.sh`    | `Co-Authored-By:`行を拒否                                   | 常に実行     |
+| `check-generated-comment.sh` | `Generated with `マーカー（AIツールアーティファクト）を拒否 | 常に実行     |
 
 ### Post-checkout Hooks
 
-| Hook | 機能 | スキップ条件 |
-|------|------|-------------|
+| Hook               | 機能                                                                                                                                                                            | スキップ条件                                                                                                                                                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `seed-worktree.sh` | 追跡されていない個人ファイル（`.env`、`.bazelrc.user` など）を、`worktree-seed`マニフェストに列挙された項目に従ってコピーまたはシンボリックリンクで新しい`git worktree`にシード | 新規作成されたリンクworktreeのチェックアウトでない（インプレースのブランチ切り替え、ファイルチェックアウト、新規クローン、サブモジュールはすべて無視）；マニフェストがない；既存ファイルは決して上書きしない；シンボリックリンクとサイズ上限を超えるファイルはスキップ |
 
 ## 新しいWorktreeのシード
@@ -150,10 +150,10 @@ hookはメインツリーに存在し、かつ新しいworktreeには**存在し
 
 マニフェストはメイン作業ツリーのファイルシステムから読み込まれるため、追跡の有無にかかわらず動作します。両方が存在する場合は重ね合わされ、両方に列挙されたパスは個人マニフェストが優先されます：
 
-| 場所 | 用途 |
-|------|------|
+| 場所                             | 用途                                                                                                         |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `<main-tree>/.git/worktree-seed` | **個人用・追跡なし**（推奨）。`git status`に現れず、`.gitignore`項目も不要で、リポジトリと運命を共にします。 |
-| `<main-tree>/.worktree-seed` | 全員が受け取る**コミット済み**のチーム共通デフォルト。 |
+| `<main-tree>/.worktree-seed`     | 全員が受け取る**コミット済み**のチーム共通デフォルト。                                                       |
 
 ### 実例：worktreeごとの`.bazelrc.user`
 
@@ -167,15 +167,15 @@ link    .bazelrc.user
 
 ## 設定
 
-| 設定 | 効果 |
-|------|------|
-| `git config hooks.allownonascii true` | 非ASCIIファイル名を許可 |
-| `git config hooks.i18nsync true` | ドキュメント同期チェックを有効化（すべての言語バリアントのステージが必要） |
-| `git config hooks.maxfilesize <bytes>` | 大容量ファイル閾値を設定（デフォルト：1048576 = 1 MB） |
-| `git config hooks.checkactions false` | 古いGitHub Actionsチェックを無効化（デフォルト有効） |
+| 設定                                           | 効果                                                                         |
+| ---------------------------------------------- | ---------------------------------------------------------------------------- |
+| `git config hooks.allownonascii true`          | 非ASCIIファイル名を許可                                                      |
+| `git config hooks.i18nsync true`               | ドキュメント同期チェックを有効化（すべての言語バリアントのステージが必要）   |
+| `git config hooks.maxfilesize <bytes>`         | 大容量ファイル閾値を設定（デフォルト：1048576 = 1 MB）                       |
+| `git config hooks.checkactions false`          | 古いGitHub Actionsチェックを無効化（デフォルト有効）                         |
 | `git config hooks.worktreeseedmaxsize <bytes>` | worktreeシードのファイルごとのサイズ上限を設定（デフォルト：1048576 = 1 MB） |
-| Makefile `check:`ターゲット | 存在時にツール固有のhooksを代替 |
-| Makefileの`.NOTPARALLEL` | 並列`make -j`実行を無効化 |
+| Makefile `check:`ターゲット                    | 存在時にツール固有のhooksを代替                                              |
+| Makefileの`.NOTPARALLEL`                       | 並列`make -j`実行を無効化                                                    |
 
 ## Hooksの無効化
 
@@ -198,12 +198,12 @@ patterns:
 
 ## ドキュメント
 
-| ドキュメント | 説明 |
-|-------------|------|
-| [はじめに](docs/ja/getting-started.md) | インストール、設定、バージョン固定 |
-| [Hooksリファレンス](docs/ja/hooks-reference.md) | すべてのhookの詳細な動作と条件 |
-| [設定ガイド](docs/ja/configuration.md) | ネームスペース、無効化、環境変数、コンテナ |
-| [開発ガイド](docs/ja/development.md) | 新しいhookの追加、コーディング規約、テスト |
+| ドキュメント                                    | 説明                                       |
+| ----------------------------------------------- | ------------------------------------------ |
+| [はじめに](docs/ja/getting-started.md)          | インストール、設定、バージョン固定         |
+| [Hooksリファレンス](docs/ja/hooks-reference.md) | すべてのhookの詳細な動作と条件             |
+| [設定ガイド](docs/ja/configuration.md)          | ネームスペース、無効化、環境変数、コンテナ |
+| [開発ガイド](docs/ja/development.md)            | 新しいhookの追加、コーディング規約、テスト |
 
 ## 開発
 

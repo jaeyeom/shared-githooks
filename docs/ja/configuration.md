@@ -48,12 +48,12 @@ patterns:
 
 一部のhookはGit設定値で動作を制御できます：
 
-| 設定 | デフォルト | 説明 |
-|------|----------|------|
-| `hooks.allownonascii` | `false` | `true`に設定すると非ASCIIファイル名を許可 |
-| `hooks.i18nsync` | `false` | `true`に設定するとすべての言語バリアントのステージが必要 |
-| `hooks.maxfilesize` | `1048576` (1 MB) | ステージされたファイルの最大サイズ（バイト） |
-| `hooks.checkactions` | `true` | `false`に設定すると`.github/workflows/`ファイルの古いGitHub Actionsチェックを無効化 |
+| 設定                  | デフォルト       | 説明                                                                                |
+| --------------------- | ---------------- | ----------------------------------------------------------------------------------- |
+| `hooks.allownonascii` | `false`          | `true`に設定すると非ASCIIファイル名を許可                                           |
+| `hooks.i18nsync`      | `false`          | `true`に設定するとすべての言語バリアントのステージが必要                            |
+| `hooks.maxfilesize`   | `1048576` (1 MB) | ステージされたファイルの最大サイズ（バイト）                                        |
+| `hooks.checkactions`  | `true`           | `false`に設定すると`.github/workflows/`ファイルの古いGitHub Actionsチェックを無効化 |
 
 ```bash
 # 非ASCIIファイル名を許可
@@ -73,13 +73,13 @@ git config hooks.checkactions false
 
 Githooksがhook実行時に自動的に設定する環境変数です：
 
-| 変数 | 説明 |
-|------|------|
-| `STAGED_FILES` | ステージされたファイルリスト（改行区切り、pre-commit専用） |
-| `STAGED_FILES_FILE` | ステージされたファイルパスを含むファイルのパス（null区切り） |
-| `GITHOOKS_OS` | オペレーティングシステム（`linux`、`darwin`、`windows`） |
-| `GITHOOKS_ARCH` | アーキテクチャ（`amd64`、`arm64`） |
-| `GITHOOKS_CONTAINER_RUN` | コンテナ内実行時に設定 |
+| 変数                     | 説明                                                         |
+| ------------------------ | ------------------------------------------------------------ |
+| `STAGED_FILES`           | ステージされたファイルリスト（改行区切り、pre-commit専用）   |
+| `STAGED_FILES_FILE`      | ステージされたファイルパスを含むファイルのパス（null区切り） |
+| `GITHOOKS_OS`            | オペレーティングシステム（`linux`、`darwin`、`windows`）     |
+| `GITHOOKS_ARCH`          | アーキテクチャ（`amd64`、`arm64`）                           |
+| `GITHOOKS_CONTAINER_RUN` | コンテナ内実行時に設定                                       |
 
 ## コンテナ化されたHook実行
 
@@ -126,14 +126,14 @@ args:
 
 ### 変数置換パターン
 
-| パターン | ソース |
-|---------|--------|
-| `${env:VAR}` | 環境変数 |
-| `${git:VAR}` | Git設定（自動スコープ） |
-| `${git-l:VAR}` | ローカルGit設定 |
-| `${git-g:VAR}` | グローバルGit設定 |
-| `${git-s:VAR}` | システムGit設定 |
-| `${!env:VAR}` | 必須環境変数（ない場合は失敗） |
+| パターン       | ソース                         |
+| -------------- | ------------------------------ |
+| `${env:VAR}`   | 環境変数                       |
+| `${git:VAR}`   | Git設定（自動スコープ）        |
+| `${git-l:VAR}` | ローカルGit設定                |
+| `${git-g:VAR}` | グローバルGit設定              |
+| `${git-s:VAR}` | システムGit設定                |
+| `${!env:VAR}`  | 必須環境変数（ない場合は失敗） |
 
 ## 並列実行設定
 

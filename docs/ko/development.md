@@ -11,12 +11,12 @@
 brew install shfmt shellcheck yamllint biome
 ```
 
-| 도구 | 용도 |
-|------|-----|
-| shfmt | 셸 스크립트 포매팅 |
+| 도구       | 용도                  |
+| ---------- | --------------------- |
+| shfmt      | 셸 스크립트 포매팅    |
 | shellcheck | 셸 스크립트 정적 분석 |
-| yamllint | YAML 파일 린트 |
-| biome | Markdown, JSON 포매팅 |
+| yamllint   | YAML 파일 린트        |
+| biome      | Markdown, JSON 포매팅 |
 
 ### Makefile 타겟
 
@@ -145,17 +145,17 @@ exit 1
 
 ## 지원되는 Hook 타입
 
-| Hook | 실행 시점 |
-|------|----------|
-| `pre-commit` | 커밋 전 |
-| `commit-msg` | 커밋 메시지 작성 후 |
-| `post-commit` | 커밋 후 |
-| `pre-push` | 푸시 전 |
-| `post-checkout` | 체크아웃 후 |
-| `post-merge` | 머지 후 |
-| `pre-rebase` | 리베이스 전 |
-| `pre-merge-commit` | 머지 커밋 전 |
-| `post-rewrite` | 히스토리 재작성 후 |
+| Hook               | 실행 시점           |
+| ------------------ | ------------------- |
+| `pre-commit`       | 커밋 전             |
+| `commit-msg`       | 커밋 메시지 작성 후 |
+| `post-commit`      | 커밋 후             |
+| `pre-push`         | 푸시 전             |
+| `post-checkout`    | 체크아웃 후         |
+| `post-merge`       | 머지 후             |
+| `pre-rebase`       | 리베이스 전         |
+| `pre-merge-commit` | 머지 커밋 전        |
+| `post-rewrite`     | 히스토리 재작성 후  |
 
 ## 코드 품질
 

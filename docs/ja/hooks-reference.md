@@ -5,10 +5,10 @@
 
 ## 概要
 
-| Hookタイプ | スクリプト数 | 実行方式 |
-|-----------|------------|---------|
-| pre-commit | 12 | 並列（`checks/`ディレクトリ） |
-| commit-msg | 3 | 並列（`checks/`ディレクトリ） |
+| Hookタイプ | スクリプト数 | 実行方式                      |
+| ---------- | ------------ | ----------------------------- |
+| pre-commit | 12           | 並列（`checks/`ディレクトリ） |
+| commit-msg | 3            | 並列（`checks/`ディレクトリ） |
 
 すべてのhookスクリプトは`set -euo pipefail`で始まり、依存ツールがない場合は
 静かにスキップします。
@@ -26,10 +26,12 @@
 実行します。
 
 **動作条件：**
+
 - プロジェクトルートに`Makefile`が存在
 - Makefileに`check:`ターゲットが定義されている
 
 **スキップ条件：**
+
 - `Makefile`がない
 - `check:`ターゲットがない
 
@@ -50,6 +52,7 @@ git config hooks.maxfilesize <bytes>
 ```
 
 **動作方式：**
+
 - ステージされたすべてのファイル（Added/Changed/Modified）のサイズを確認
 - 閾値超過時にファイル名とサイズを表示し、コミットを中断
 - 常に実行（スキップ条件なし）
@@ -61,11 +64,13 @@ git config hooks.maxfilesize <bytes>
 trailing whitespace、space-before-tabなどの空白関連エラーを検出します。
 
 **動作方式：**
+
 - `git diff-index --check --cached`を使用してステージされた変更を検査
 - 言語別フォーマッターが処理するファイルは除外
 - `.gitattributes`で`binary`、`-text`、`eol=crlf`と指定されたファイルも除外
 
 **除外ファイル拡張子：**
+
 - `.go` — gofmtが処理
 - `.py` — black/ruffなどが処理
 - `.proto` — clang-formatが処理
@@ -104,14 +109,17 @@ git config hooks.i18nsync true
 ```
 
 **言語検出：**
+
 - 追跡されている`README.<lang>.md`ファイルから言語を自動検出
 - `README.<lang>.md`ファイルがなければ何もしない
 
 **追跡ファイルグループ：**
+
 - `README.md` ↔ `README.<lang>.md`（すべてのバリアントを一緒にステージする必要あり）
 - `docs/*.md` ↔ `docs/<lang>/*.md`（翻訳対応ファイルが存在する場合のみ適用）
 
 **スキップ条件：**
+
 - `hooks.i18nsync`が`true`に設定されていない（デフォルト）
 - リポジトリに`README.<lang>.md`ファイルが追跡されていない
 - `docs/`ファイルに翻訳対応ファイルがない
@@ -136,10 +144,12 @@ git config hooks.allownonascii true
 Goプロジェクトで`golangci-lint`を実行します。
 
 **動作条件：**
+
 - プロジェクトルートに`.golangci.yml`が存在
 - `golangci-lint`コマンドがインストールされている
 
 **スキップ条件：**
+
 - `.golangci.yml`がない
 - `golangci-lint`がインストールされていない（警告メッセージ出力）
 - Makefileの`check`ターゲットで既に`golangci-lint`を実行している場合
@@ -155,10 +165,12 @@ Goプロジェクトで`golangci-lint`を実行します。
 Pythonプロジェクトで`ruff check`と`ruff format --check`を実行します。
 
 **動作条件：**
+
 - `ruff.toml`、`.ruff.toml`、または`pyproject.toml`の`[tool.ruff]`セクションが存在
 - `ruff`コマンドがインストールされている
 
 **スキップ条件：**
+
 - ruff設定ファイルがない
 - `ruff`がインストールされていない（警告メッセージ出力）
 - Makefileの`check`ターゲットで既に`ruff`を実行している場合（重複防止）
@@ -171,10 +183,12 @@ Pythonプロジェクトで`ruff check`と`ruff format --check`を実行しま�
 ステージされた`.sh`ファイルに対して`shellcheck`を実行します。
 
 **動作条件：**
+
 - `shellcheck`コマンドがインストールされている
 - ステージされた`.sh`ファイルが存在（Added/Changed/Modified）
 
 **スキップ条件：**
+
 - `shellcheck`がインストールされていない（警告メッセージ出力）
 - ステージされた`.sh`ファイルがない
 - Makefileの`check`ターゲットで既に`shellcheck`を実行している場合
@@ -187,10 +201,12 @@ Pythonプロジェクトで`ruff check`と`ruff format --check`を実行しま�
 ステージされた`.org`ファイルに対して`org-lint`を実行します。
 
 **動作条件：**
+
 - `org-lint`コマンドがインストールされている
 - ステージされた`.org`ファイルが存在（Added/Changed/Modified）
 
 **スキップ条件：**
+
 - `org-lint`がインストールされていない（静かにスキップ）
 - ステージされた`.org`ファイルがない
 
@@ -201,10 +217,12 @@ Pythonプロジェクトで`ruff check`と`ruff format --check`を実行しま�
 Semgrep設定があるプロジェクトで`semgrep scan`を実行します。
 
 **動作条件：**
+
 - `.semgrep.yml`、`.semgrep.yaml`、または`.semgrep/`ディレクトリが存在
 - `semgrep`コマンドがインストールされている
 
 **スキップ条件：**
+
 - Semgrep設定ファイル/ディレクトリがない
 - `semgrep`がインストールされていない（警告メッセージ出力）
 - Makefileの`check`ターゲットで既に`semgrep`を実行している場合
@@ -217,26 +235,31 @@ Semgrep設定があるプロジェクトで`semgrep scan`を実行します。
 Bazelプロジェクトで変更の影響を受けるテストを実行します。
 
 **動作条件：**
+
 - プロジェクトルートに`BUILD`または`BUILD.bazel`が存在
 - `bazel`コマンドがインストールされている
 
 **スキップ条件：**
+
 - `BUILD`/`BUILD.bazel`がない
 - `bazel`がインストールされていない（警告メッセージ出力）
 - Makefileの`check`ターゲットで既に`bazel test`を実行している場合
   （重複防止）
 
 **スマートテスト選択：**
+
 - `bazel-affected-tests`バイナリがあれば、変更の影響を受けるテストのみ
   選択的に実行
 - なければ`bazel test //...:all`で全テストを実行
 
 **フォーマットテストの特別処理：**
+
 - `//tools/format:`テストが失敗した場合、自動的に`bazel run //:format`を
   実行してコードをフォーマットし、コミットを中断
 - 開発者がフォーマットされたコードを確認後、再コミット可能
 
 **プラットフォーム制限：**
+
 - macOS（Darwin）ではフォーマットテスト以外のテストをスキップ
 
 ---
@@ -257,9 +280,11 @@ git config hooks.checkactions false
 ```
 
 **動作条件：**
+
 - ステージされたファイルに`.github/workflows/*.{yml,yaml}`が1つ以上存在
 
 **スキップ条件：**
+
 - ステージされたワークフローファイルがない
 - `hooks.checkactions`が`false`に設定されている
 - `uses:`参照がSHA（`@abc123...`）またはブランチ（`@main`）でピン留めされている
@@ -267,29 +292,29 @@ git config hooks.checkactions false
 
 **強制される最小メジャーバージョン：**
 
-| アクション | 最小 |
-|-----------|------|
-| `actions/checkout` | v4 |
-| `actions/setup-go` | v5 |
-| `actions/setup-node` | v4 |
-| `actions/setup-python` | v5 |
-| `actions/setup-java` | v4 |
-| `actions/setup-dotnet` | v4 |
-| `actions/cache` | v4 |
-| `actions/upload-artifact` | v4 |
-| `actions/download-artifact` | v4 |
-| `actions/configure-pages` | v5 |
-| `actions/deploy-pages` | v4 |
-| `actions/upload-pages-artifact` | v3 |
-| `golangci/golangci-lint-action` | v6 |
-| `docker/build-push-action` | v6 |
-| `docker/login-action` | v3 |
-| `docker/setup-buildx-action` | v3 |
-| `docker/setup-qemu-action` | v3 |
-| `docker/metadata-action` | v5 |
-| `codecov/codecov-action` | v4 |
-| `softprops/action-gh-release` | v2 |
-| `github/codeql-action` | v3 |
+| アクション                      | 最小 |
+| ------------------------------- | ---- |
+| `actions/checkout`              | v4   |
+| `actions/setup-go`              | v5   |
+| `actions/setup-node`            | v4   |
+| `actions/setup-python`          | v5   |
+| `actions/setup-java`            | v4   |
+| `actions/setup-dotnet`          | v4   |
+| `actions/cache`                 | v4   |
+| `actions/upload-artifact`       | v4   |
+| `actions/download-artifact`     | v4   |
+| `actions/configure-pages`       | v5   |
+| `actions/deploy-pages`          | v4   |
+| `actions/upload-pages-artifact` | v3   |
+| `golangci/golangci-lint-action` | v6   |
+| `docker/build-push-action`      | v6   |
+| `docker/login-action`           | v3   |
+| `docker/setup-buildx-action`    | v3   |
+| `docker/setup-qemu-action`      | v3   |
+| `docker/metadata-action`        | v5   |
+| `codecov/codecov-action`        | v4   |
+| `softprops/action-gh-release`   | v2   |
+| `github/codeql-action`          | v3   |
 
 **golangci-lintバイナリバージョン：** `golangci/golangci-lint-action`
 ステップ内部の`version:`入力はv2以上に解決される必要があります。
@@ -383,6 +408,7 @@ copy    config/*.local.yaml
 - `<main-tree>/.worktree-seed` — コミット済みのチーム共通デフォルト。
 
 **動作：**
+
 - メインツリーに存在し、かつ新しいworktreeには存在しない項目のみをシード
   （冪等、上書きしない）
 - グロブはメインツリーを基準に展開
@@ -390,6 +416,7 @@ copy    config/*.local.yaml
 - メイン作業ツリーは`git worktree list --porcelain`の最初の項目から解決
 
 **注意事項：**
+
 - hookが有効である必要があり、CIやその他のhookを使わないチェックアウトには
   何も適用されない（CIはworktreeを作成しないため問題なし）
 - `git worktree add --no-checkout`は`post-checkout`を発動させない
