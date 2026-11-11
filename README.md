@@ -53,6 +53,7 @@ commit → pre-commit hooks (parallel) →
   ├── Bazel project without Makefile check? → affected tests
   ├── .org files staged? → org-lint
   ├── Semgrep config present? → semgrep scan
+  ├── gitleaks installed? → scan staged changes for secrets
   ├── Large files staged? → reject (configurable limit)
   ├── Whitespace errors? → git diff --check
   ├── Non-ASCII filenames? → reject (configurable)
@@ -108,6 +109,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | `lint-shell.sh`             | Runs `shellcheck` on staged `.sh` files                                                                                                                                        | No staged `.sh` files, tool not installed, or Makefile `check:` target mentions `shellcheck`                                            |
 | `lint-org.sh`               | Runs `org-lint` on staged `.org` files                                                                                                                                         | No staged `.org` files, tool not installed                                                                                              |
 | `lint-semgrep.sh`           | Runs `semgrep scan` for static analysis                                                                                                                                        | No `.semgrep.yml`, `.semgrep.yaml`, or `.semgrep/` directory; tool not installed; or Makefile `check:` target mentions `semgrep`        |
+| `lint-gitleaks.sh`          | Scans staged changes for secrets with `gitleaks git --pre-commit --staged`; honors the repo's `.gitleaks.toml` and `.gitleaksignore`                                           | Tool not installed, or `git config hooks.gitleaks false`                                                                                |
 | `test-bazel.sh`             | Runs affected Bazel tests via `bazel-affected-tests`, auto-fixes format tests                                                                                                  | No `BUILD`/`BUILD.bazel` file, `bazel` not installed, or Makefile `check:` target mentions `bazel test`                                 |
 | `check-workflow-actions.sh` | Rejects staged `.github/workflows/*.yml` that pin known actions below a minimum major version (e.g. `actions/checkout@v3`), or pin golangci-lint v1 via `golangci-lint-action` | No staged workflow files, or `git config hooks.checkactions false`                                                                      |
 
@@ -173,6 +175,7 @@ link    .bazelrc.user
 | `git config hooks.i18nsync true`               | Enable documentation sync check (requires all language variants staged together) |
 | `git config hooks.maxfilesize <bytes>`         | Set large file threshold (default: 1048576 = 1 MB)                               |
 | `git config hooks.checkactions false`          | Disable the outdated GitHub Actions check (enabled by default)                   |
+| `git config hooks.gitleaks false`              | Disable the gitleaks secret scan (enabled by default)                            |
 | `git config hooks.worktreeseedmaxsize <bytes>` | Set the per-file size cap for worktree seeding (default: 1048576 = 1 MB)         |
 | Makefile `check:` target                       | Overrides tool-specific hooks when present                                       |
 | `.NOTPARALLEL` in Makefile                     | Disables parallel `make -j` execution                                            |

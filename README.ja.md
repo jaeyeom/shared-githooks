@@ -53,6 +53,7 @@ commit → pre-commit hooks（並列）→
   ├── Makefile checkのないBazelプロジェクト？ → 影響を受けるテスト
   ├── ステージされた.orgファイル？ → org-lint
   ├── Semgrep設定あり？ → semgrep scan
+  ├── gitleaksインストール済み？ → ステージされた変更のシークレット検査
   ├── 大容量ファイルのステージ？ → 拒否（設定可能な制限）
   ├── 空白エラー？ → git diff --check
   ├── 非ASCIIファイル名？ → 拒否（設定可能）
@@ -108,6 +109,7 @@ test:
 | `lint-shell.sh`             | ステージされた`.sh`ファイルに`shellcheck`を実行                                                                                                                                                | ステージされた`.sh`ファイルなし、ツール未インストール、またはMakefile `check:`ターゲットが`shellcheck`に言及                                            |
 | `lint-org.sh`               | ステージされた`.org`ファイルに`org-lint`を実行                                                                                                                                                 | ステージされた`.org`ファイルなし、ツール未インストール                                                                                                  |
 | `lint-semgrep.sh`           | 静的解析のため`semgrep scan`を実行                                                                                                                                                             | `.semgrep.yml`、`.semgrep.yaml`、`.semgrep/`ディレクトリなし；ツール未インストール；またはMakefile `check:`ターゲットが`semgrep`に言及                  |
+| `lint-gitleaks.sh`          | `gitleaks git --pre-commit --staged`でステージされた変更のシークレットを検査；リポジトリの`.gitleaks.toml`と`.gitleaksignore`を適用                                                            | ツール未インストール、または`git config hooks.gitleaks false`                                                                                           |
 | `test-bazel.sh`             | `bazel-affected-tests`で影響を受けるBazelテストを実行、フォーマットテスト自動修正                                                                                                              | `BUILD`/`BUILD.bazel`ファイルなし、`bazel`未インストール、またはMakefile `check:`ターゲットが`bazel test`に言及                                         |
 | `check-workflow-actions.sh` | ステージされた`.github/workflows/*.yml`で既知のアクションのメジャーバージョンが最小値未満（`actions/checkout@v3`など）、または`golangci-lint-action`がgolangci-lint v1を指定している場合に拒否 | ステージされたワークフローファイルなし、または`git config hooks.checkactions false`                                                                     |
 
@@ -173,6 +175,7 @@ link    .bazelrc.user
 | `git config hooks.i18nsync true`               | ドキュメント同期チェックを有効化（すべての言語バリアントのステージが必要）   |
 | `git config hooks.maxfilesize <bytes>`         | 大容量ファイル閾値を設定（デフォルト：1048576 = 1 MB）                       |
 | `git config hooks.checkactions false`          | 古いGitHub Actionsチェックを無効化（デフォルト有効）                         |
+| `git config hooks.gitleaks false`              | gitleaksシークレット検査を無効化（デフォルト有効）                           |
 | `git config hooks.worktreeseedmaxsize <bytes>` | worktreeシードのファイルごとのサイズ上限を設定（デフォルト：1048576 = 1 MB） |
 | Makefile `check:`ターゲット                    | 存在時にツール固有のhooksを代替                                              |
 | Makefileの`.NOTPARALLEL`                       | 並列`make -j`実行を無効化                                                    |

@@ -225,6 +225,38 @@ Semgrep 설정이 있는 프로젝트에서 `semgrep scan`을 실행합니다.
 
 ---
 
+### lint-gitleaks.sh — 시크릿 검사
+
+`gitleaks git --pre-commit --staged --redact`로 스테이징된 변경에서 시크릿(API 키,
+토큰, 개인 키)을 검사합니다. 커밋되는 줄만 검사하므로 빠르고, 과거 히스토리를
+다시 지적하지 않습니다. gitleaks는 저장소의 `.gitleaks.toml`과 `.gitleaksignore`를
+자동으로 읽습니다.
+
+**기본 활성화.** 비활성화하려면:
+
+```bash
+git config hooks.gitleaks false
+```
+
+**활성화 조건:**
+
+- `gitleaks`가 설치되어 있음
+
+**건너뛰는 조건:**
+
+- `gitleaks`가 설치되지 않음 (경고 메시지 출력)
+- `hooks.gitleaks`가 `false`로 설정됨
+
+**Makefile 중복 방지 없음:** gitleaks를 실행하는 `make check` 타겟은 커밋된
+히스토리를 검사하며 스테이징된 내용은 보지 못하므로, Makefile이 gitleaks를
+언급해도 이 훅은 실행됩니다.
+
+**오탐:** 해당 결과의 fingerprint(`<commit>:<path>:<rule>:<line>`, 스테이징된
+변경은 `<path>:<rule>:<line>`)를 `.gitleaksignore`에 추가합니다. 실제 자격 증명은
+무시하지 말고 교체하세요.
+
+---
+
 ### test-bazel.sh — Bazel 테스트
 
 Bazel 프로젝트에서 변경에 영향받는 테스트를 실행합니다.

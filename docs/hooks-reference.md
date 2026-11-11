@@ -225,6 +225,38 @@ Runs `semgrep scan` on projects with Semgrep configuration.
 
 ---
 
+### lint-gitleaks.sh — Secret Scanning
+
+Scans the staged changes for secrets (API keys, tokens, private keys) with
+`gitleaks git --pre-commit --staged --redact`. Only lines being committed are
+scanned, so it is fast and never re-flags old history. gitleaks loads the
+repo's `.gitleaks.toml` and `.gitleaksignore` automatically.
+
+**Enabled by default.** Disable with:
+
+```bash
+git config hooks.gitleaks false
+```
+
+**Activation conditions:**
+
+- `gitleaks` is installed
+
+**Skip conditions:**
+
+- `gitleaks` is not installed (prints warning)
+- `hooks.gitleaks` is set to `false`
+
+**No Makefile deduplication:** a `make check` target that runs gitleaks scans
+committed history and cannot see staged content, so this hook runs even when
+the Makefile mentions gitleaks.
+
+**False positives:** add the finding's fingerprint
+(`<commit>:<path>:<rule>:<line>`, or `<path>:<rule>:<line>` for staged
+changes) to `.gitleaksignore`. Never ignore a real credential; rotate it.
+
+---
+
 ### test-bazel.sh — Bazel Tests
 
 Runs tests affected by changes in Bazel projects.
