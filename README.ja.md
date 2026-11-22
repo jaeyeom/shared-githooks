@@ -114,6 +114,7 @@ test:
 | `test-bazel.sh`             | `bazel-affected-tests`で影響を受けるBazelテストを実行、フォーマットテスト自動修正                                                                                                              | `BUILD`/`BUILD.bazel`ファイルなし、`bazel`未インストール、またはMakefile `check:`ターゲットが`bazel test`に言及                                         |
 | `check-workflow-actions.sh` | ステージされた`.github/workflows/*.yml`で既知のアクションのメジャーバージョンが最小値未満（`actions/checkout@v3`など）、または`golangci-lint-action`がgolangci-lint v1を指定している場合に拒否 | ステージされたワークフローファイルなし、または`git config hooks.checkactions false`                                                                     |
 | `check-git-config.sh`       | 設定値を出力せずにローカル（およびworktree）のGit設定からURL内の認証情報、認証ヘッダー、シークレット/トークンパターンを検査                                                                    | `git config hooks.checkgitconfig false`                                                                                                                 |
+| `check-envrc.sh`            | `.envrc`、`.envrc.local`、`.envrc.user`にリテラルのシークレットが含まれないこと（`$(...)`参照は許可）および`.envrc.secrets`がgitignoreされステージされないことを検査                           | `git config hooks.checkenvrc false`                                                                                                                     |
 
 ### Commit-msg Hooks（すべて並列実行）
 
@@ -178,6 +179,7 @@ link    .bazelrc.user
 | `git config hooks.maxfilesize <bytes>`         | 大容量ファイル閾値を設定（デフォルト：1048576 = 1 MB）                       |
 | `git config hooks.checkactions false`          | 古いGitHub Actionsチェックを無効化（デフォルト有効）                         |
 | `git config hooks.checkgitconfig false`        | ローカルGit設定のシークレット検査を無効化（デフォルト有効）                  |
+| `git config hooks.checkenvrc false`            | `.envrc` / `.envrc.secrets`ポリシー検査を無効化（デフォルト有効）            |
 | `git config hooks.gitleaks false`              | gitleaksシークレット検査を無効化（デフォルト有効）                           |
 | `git config hooks.worktreeseedmaxsize <bytes>` | worktreeシードのファイルごとのサイズ上限を設定（デフォルト：1048576 = 1 MB） |
 | Makefile `check:`ターゲット                    | 存在時にツール固有のhooksを代替                                              |

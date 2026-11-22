@@ -55,6 +55,7 @@ patterns:
 | `hooks.maxfilesize`    | `1048576` (1 MB) | 스테이징된 파일의 최대 크기 (바이트)                                                 |
 | `hooks.checkactions`   | `true`           | `false`로 설정하면 `.github/workflows/` 파일의 오래된 GitHub Actions 검사를 비활성화 |
 | `hooks.checkgitconfig` | `true`           | `false`로 설정하면 로컬 Git 설정 시크릿 검사를 비활성화                              |
+| `hooks.checkenvrc`     | `true`           | `false`로 설정하면 `.envrc` / `.envrc.secrets` 정책 검사를 비활성화                  |
 | `hooks.gitleaks`       | `true`           | `false`로 설정하면 스테이징된 변경에 대한 gitleaks 시크릿 검사를 비활성화            |
 
 ```bash
@@ -72,6 +73,9 @@ git config hooks.checkactions false
 
 # 로컬 Git 설정 시크릿 검사 비활성화
 git config hooks.checkgitconfig false
+
+# .envrc / .envrc.secrets 정책 검사 비활성화
+git config hooks.checkenvrc false
 
 # gitleaks 시크릿 검사 비활성화
 git config hooks.gitleaks false
