@@ -377,6 +377,34 @@ git config hooks.checkgitconfig false
 
 ---
 
+### check-envrc.sh — direnv 시크릿 분리 정책
+
+`.envrc`, `.envrc.local`, `.envrc.user`에는 시크릿을 두지 않아 AI 에이전트가
+안전하게 읽을 수 있도록 하고, 실제 시크릿은 `.envrc.secrets`(gitignore되며
+절대 커밋되지 않음)에만 보관하는 3계층 구성을 강제합니다.
+
+**기본적으로 활성화됩니다.** 비활성화하려면:
+
+```bash
+git config hooks.checkenvrc false
+```
+
+**검사 항목:**
+
+- **스테이징 금지:** `.envrc.secrets`가 스테이징된 커밋을 거부
+- **gitignore 확인:** `.envrc.secrets`가 존재하지만 gitignore되지 않았거나
+  추적 중인 경우 실패
+- **시크릿 없는 `.envrc` / `.envrc.local` / `.envrc.user`:** 추적 및
+  미추적/gitignore된 파일에서 URL 내 자격 증명(`https?://[^/@]+@`), 일반적인
+  시크릿/토큰 패턴, 민감한 변수명(`*_SECRET`, `*_TOKEN`, `*_PASSWORD`,
+  `*_API_KEY` 등)에 대한 리터럴 할당을 검사합니다. `$(op read ...)`나
+  `$(gh auth token)` 같은 동적 조회, 변수 확장(`${VAR}`), 빈 값은 허용됩니다.
+
+**안전한 출력:** 시크릿 값은 절대 출력되지 않으며 파일 경로, 줄 번호, 사유
+또는 변수명만 출력됩니다.
+
+---
+
 ## Commit-msg Hooks
 
 커밋 메시지의 품질과 정책을 검증하는 hook들입니다.

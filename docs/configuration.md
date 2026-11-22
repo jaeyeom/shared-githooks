@@ -56,6 +56,7 @@ Some hooks can be controlled via Git config values:
 | `hooks.maxfilesize`    | `1048576` (1 MB) | Maximum file size in bytes for staged files                                                |
 | `hooks.checkactions`   | `true`           | Set to `false` to disable the outdated GitHub Actions check for `.github/workflows/` files |
 | `hooks.checkgitconfig` | `true`           | Set to `false` to disable the local Git config secret check                                |
+| `hooks.checkenvrc`     | `true`           | Set to `false` to disable the `.envrc` / `.envrc.secrets` policy check                     |
 | `hooks.gitleaks`       | `true`           | Set to `false` to disable the gitleaks secret scan of staged changes                       |
 
 ```bash
@@ -73,6 +74,9 @@ git config hooks.checkactions false
 
 # Disable the local Git config secret check
 git config hooks.checkgitconfig false
+
+# Disable the .envrc / .envrc.secrets policy check
+git config hooks.checkenvrc false
 
 # Disable the gitleaks secret scan
 git config hooks.gitleaks false

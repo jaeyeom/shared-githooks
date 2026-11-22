@@ -387,6 +387,35 @@ git config hooks.checkgitconfig false
 
 ---
 
+### check-envrc.sh — direnvシークレット分離ポリシー
+
+`.envrc`、`.envrc.local`、`.envrc.user`にシークレットを含めない（AIエージェン
+トが読み取っても安全にする）一方で、実際のシークレットは`.envrc.secrets`
+（gitignoreされ、コミットされない）のみに配置する3層構成を強制します。
+
+**デフォルトで有効です。** 無効化するには：
+
+```bash
+git config hooks.checkenvrc false
+```
+
+**検査対象：**
+
+- **ステージ禁止：** `.envrc.secrets`がステージされたコミットを拒否
+- **gitignore確認：** `.envrc.secrets`が存在しgitignoreされていない（または
+  追跡されている）場合に失敗
+- **シークレットを含まない`.envrc` / `.envrc.local` / `.envrc.user`：** 追跡
+  済みおよび未追跡/gitignore済みのファイルから、埋め込みURL認証情報
+  （`https?://[^/@]+@`）、一般的なシークレット/トークンパターン、機密変数名
+  （`*_SECRET`、`*_TOKEN`、`*_PASSWORD`、`*_API_KEY`など）へのリテラル代入
+  を検査します。`$(op read ...)`や`$(gh auth token)`などの動的な参照、変数
+  展開（`${VAR}`）、空の値は許可されます。
+
+**安全な出力：** シークレットの値は出力されず、ファイルパス、行番号、理由ま
+たは変数名のみが出力されます。
+
+---
+
 ## Commit-msg Hooks
 
 コミットメッセージの品質とポリシーを検証するhookです。

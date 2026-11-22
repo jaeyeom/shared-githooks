@@ -55,6 +55,7 @@ patterns:
 | `hooks.maxfilesize`    | `1048576` (1 MB) | ステージされたファイルの最大サイズ（バイト）                                        |
 | `hooks.checkactions`   | `true`           | `false`に設定すると`.github/workflows/`ファイルの古いGitHub Actionsチェックを無効化 |
 | `hooks.checkgitconfig` | `true`           | `false`に設定するとローカルGit設定のシークレット検査を無効化                        |
+| `hooks.checkenvrc`     | `true`           | `false`に設定すると`.envrc` / `.envrc.secrets`ポリシー検査を無効化                  |
 | `hooks.gitleaks`       | `true`           | `false`に設定するとステージされた変更のgitleaksシークレット検査を無効化             |
 
 ```bash
@@ -72,6 +73,9 @@ git config hooks.checkactions false
 
 # ローカルGit設定のシークレット検査を無効化
 git config hooks.checkgitconfig false
+
+# .envrc / .envrc.secretsポリシー検査を無効化
+git config hooks.checkenvrc false
 
 # gitleaksシークレット検査を無効化
 git config hooks.gitleaks false

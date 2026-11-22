@@ -114,6 +114,7 @@ See the [makefile-workflow](https://github.com/jaeyeom/claude-toolbox) conventio
 | `test-bazel.sh`             | Runs affected Bazel tests via `bazel-affected-tests`, auto-fixes format tests                                                                                                  | No `BUILD`/`BUILD.bazel` file, `bazel` not installed, or Makefile `check:` target mentions `bazel test`                                 |
 | `check-workflow-actions.sh` | Rejects staged `.github/workflows/*.yml` that pin known actions below a minimum major version (e.g. `actions/checkout@v3`), or pin golangci-lint v1 via `golangci-lint-action` | No staged workflow files, or `git config hooks.checkactions false`                                                                      |
 | `check-git-config.sh`       | Scans local (and worktree) Git config for embedded URL credentials, authorization headers, and secret/token patterns without printing values                                   | `git config hooks.checkgitconfig false`                                                                                                 |
+| `check-envrc.sh`            | Ensures `.envrc`, `.envrc.local`, and `.envrc.user` contain no literal secrets (allowing `$(...)` lookups) and `.envrc.secrets` is gitignored and never staged                 | `git config hooks.checkenvrc false`                                                                                                     |
 
 ### Commit-msg Hooks (all run in parallel)
 
@@ -178,6 +179,7 @@ link    .bazelrc.user
 | `git config hooks.maxfilesize <bytes>`         | Set large file threshold (default: 1048576 = 1 MB)                               |
 | `git config hooks.checkactions false`          | Disable the outdated GitHub Actions check (enabled by default)                   |
 | `git config hooks.checkgitconfig false`        | Disable the local Git config secret check (enabled by default)                   |
+| `git config hooks.checkenvrc false`            | Disable the `.envrc` / `.envrc.secrets` policy check (enabled by default)        |
 | `git config hooks.gitleaks false`              | Disable the gitleaks secret scan (enabled by default)                            |
 | `git config hooks.worktreeseedmaxsize <bytes>` | Set the per-file size cap for worktree seeding (default: 1048576 = 1 MB)         |
 | Makefile `check:` target                       | Overrides tool-specific hooks when present                                       |

@@ -378,6 +378,35 @@ userinfo inside reported config key subsections is redacted (`https://***@`).
 
 ---
 
+### check-envrc.sh — direnv Secret Separation Policy
+
+Enforces a three-tier `direnv` setup where `.envrc`, `.envrc.local`, and
+`.envrc.user` remain secret-free (safe for AI agents to read) while actual
+secrets live only in `.envrc.secrets` (gitignored and never committed).
+
+**Enabled by default.** Disable with:
+
+```bash
+git config hooks.checkenvrc false
+```
+
+**What is checked:**
+
+- **Never staged:** Rejects any commit that stages `.envrc.secrets`
+- **Gitignored:** Fails if `.envrc.secrets` exists in the repository and is not
+  gitignored (or is tracked)
+- **Secret-free `.envrc`, `.envrc.local`, and `.envrc.user`:** Scans both
+  tracked and untracked/gitignored files for embedded URL credentials
+  (`https?://[^/@]+@`), common secret/token patterns, and literal assignments to
+  sensitive variable names (`*_SECRET`, `*_TOKEN`, `*_PASSWORD`, `*_API_KEY`,
+  etc.). Dynamic lookups such as `$(op read ...)` or `$(gh auth token)`,
+  variable expansions (`${VAR}`), and empty values are allowed.
+
+**Safe output:** Secret values are never printed—only the file path, line
+number, and reason or variable name.
+
+---
+
 ## Commit-msg Hooks
 
 Hooks that validate commit message quality and policies. Located in
