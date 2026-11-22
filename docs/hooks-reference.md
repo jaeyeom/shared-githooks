@@ -348,6 +348,36 @@ To bump the minimum versions, edit `MIN_MAJOR` in `check-workflow-actions.sh`.
 
 ---
 
+### check-git-config.sh — Local Git Config Secret Detection
+
+Scans local Git config (`git config --local --list -z`, plus
+`git config --worktree --list -z` when `extensions.worktreeConfig` is `true`)
+for sensitive information that secret scanners inspecting only staged files or
+commit history will miss.
+
+**Enabled by default.** Disable with:
+
+```bash
+git config hooks.checkgitconfig false
+```
+
+**What is flagged:**
+
+- **Embedded URL credentials** (`https?://[^/@]+@`) in `remote.*.url`,
+  `remote.*.pushurl`, `http.proxy`, `remote.*.proxy`, and
+  `url.<base>.(push)?insteadOf` (SSH/SCP URLs such as `git@...` and `ssh://...`
+  are ignored)
+- **Authorization headers** (`Authorization:` and `Proxy-Authorization:`,
+  case-insensitive) in `http.extraheader` and `http.*.extraheader`
+- **Common secret/token patterns** across local config values (`gh[pousr]_`,
+  `github_pat_`, `AKIA`/`ASIA`, `glpat-`, `xox[baprs]-`, `sk-...`, and PEM
+  private key headers)
+
+**Safe output:** Config values are never printed, and any `https?://[^/@]+@`
+userinfo inside reported config key subsections is redacted (`https://***@`).
+
+---
+
 ## Commit-msg Hooks
 
 Hooks that validate commit message quality and policies. Located in

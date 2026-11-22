@@ -49,13 +49,14 @@ Use `.githooks/.envs.yaml` to set environment variables during hook execution.
 
 Some hooks can be controlled via Git config values:
 
-| Config                | Default          | Description                                                                                |
-| --------------------- | ---------------- | ------------------------------------------------------------------------------------------ |
-| `hooks.allownonascii` | `false`          | Set to `true` to allow non-ASCII filenames                                                 |
-| `hooks.i18nsync`      | `false`          | Set to `true` to require all language variants staged together                             |
-| `hooks.maxfilesize`   | `1048576` (1 MB) | Maximum file size in bytes for staged files                                                |
-| `hooks.checkactions`  | `true`           | Set to `false` to disable the outdated GitHub Actions check for `.github/workflows/` files |
-| `hooks.gitleaks`      | `true`           | Set to `false` to disable the gitleaks secret scan of staged changes                       |
+| Config                 | Default          | Description                                                                                |
+| ---------------------- | ---------------- | ------------------------------------------------------------------------------------------ |
+| `hooks.allownonascii`  | `false`          | Set to `true` to allow non-ASCII filenames                                                 |
+| `hooks.i18nsync`       | `false`          | Set to `true` to require all language variants staged together                             |
+| `hooks.maxfilesize`    | `1048576` (1 MB) | Maximum file size in bytes for staged files                                                |
+| `hooks.checkactions`   | `true`           | Set to `false` to disable the outdated GitHub Actions check for `.github/workflows/` files |
+| `hooks.checkgitconfig` | `true`           | Set to `false` to disable the local Git config secret check                                |
+| `hooks.gitleaks`       | `true`           | Set to `false` to disable the gitleaks secret scan of staged changes                       |
 
 ```bash
 # Allow non-ASCII filenames
@@ -69,6 +70,9 @@ git config hooks.maxfilesize 5242880
 
 # Disable the outdated GitHub Actions check
 git config hooks.checkactions false
+
+# Disable the local Git config secret check
+git config hooks.checkgitconfig false
 
 # Disable the gitleaks secret scan
 git config hooks.gitleaks false

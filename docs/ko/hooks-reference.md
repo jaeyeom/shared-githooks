@@ -348,6 +348,35 @@ golangci-lint v2가 호환성을 깨는 설정 변경을 도입했기 때문에 
 
 ---
 
+### check-git-config.sh — 로컬 Git 설정 시크릿 검출
+
+스테이징된 파일이나 커밋 히스토리만 검사하는 시크릿 스캐너가 놓치기 쉬운
+로컬 Git 설정(`git config --local --list -z` 및 `extensions.worktreeConfig`가
+`true`일 때 `git config --worktree --list -z`)에서 민감한 정보를 검사합니다.
+
+**기본적으로 활성화됩니다.** 비활성화하려면:
+
+```bash
+git config hooks.checkgitconfig false
+```
+
+**검출 대상:**
+
+- `remote.*.url`, `remote.*.pushurl`, `http.proxy`, `remote.*.proxy`,
+  `url.<base>.(push)?insteadOf`의 **URL 내 자격 증명** (`https?://[^/@]+@`,
+  `git@...` 및 `ssh://...` 같은 SSH/SCP URL은 무시)
+- `http.extraheader` 및 `http.*.extraheader`의 **인증 헤더**
+  (`Authorization:` 및 `Proxy-Authorization:`, 대소문자 구분 없음)
+- 로컬 설정 값의 **일반적인 시크릿/토큰 패턴** (`gh[pousr]_`,
+  `github_pat_`, `AKIA`/`ASIA`, `glpat-`, `xox[baprs]-`, `sk-...`, PEM
+  개인 키 헤더)
+
+**안전한 출력:** 설정 값은 절대 출력되지 않으며, 보고되는 설정 키의
+하위 섹션에 포함된 `https?://[^/@]+@` 사용자 정보도 마스킹됩니다
+(`https://***@`).
+
+---
+
 ## Commit-msg Hooks
 
 커밋 메시지의 품질과 정책을 검증하는 hook들입니다.

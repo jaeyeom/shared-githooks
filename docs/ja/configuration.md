@@ -48,13 +48,14 @@ patterns:
 
 一部のhookはGit設定値で動作を制御できます：
 
-| 設定                  | デフォルト       | 説明                                                                                |
-| --------------------- | ---------------- | ----------------------------------------------------------------------------------- |
-| `hooks.allownonascii` | `false`          | `true`に設定すると非ASCIIファイル名を許可                                           |
-| `hooks.i18nsync`      | `false`          | `true`に設定するとすべての言語バリアントのステージが必要                            |
-| `hooks.maxfilesize`   | `1048576` (1 MB) | ステージされたファイルの最大サイズ（バイト）                                        |
-| `hooks.checkactions`  | `true`           | `false`に設定すると`.github/workflows/`ファイルの古いGitHub Actionsチェックを無効化 |
-| `hooks.gitleaks`      | `true`           | `false`に設定するとステージされた変更のgitleaksシークレット検査を無効化             |
+| 設定                   | デフォルト       | 説明                                                                                |
+| ---------------------- | ---------------- | ----------------------------------------------------------------------------------- |
+| `hooks.allownonascii`  | `false`          | `true`に設定すると非ASCIIファイル名を許可                                           |
+| `hooks.i18nsync`       | `false`          | `true`に設定するとすべての言語バリアントのステージが必要                            |
+| `hooks.maxfilesize`    | `1048576` (1 MB) | ステージされたファイルの最大サイズ（バイト）                                        |
+| `hooks.checkactions`   | `true`           | `false`に設定すると`.github/workflows/`ファイルの古いGitHub Actionsチェックを無効化 |
+| `hooks.checkgitconfig` | `true`           | `false`に設定するとローカルGit設定のシークレット検査を無効化                        |
+| `hooks.gitleaks`       | `true`           | `false`に設定するとステージされた変更のgitleaksシークレット検査を無効化             |
 
 ```bash
 # 非ASCIIファイル名を許可
@@ -68,6 +69,9 @@ git config hooks.maxfilesize 5242880
 
 # 古いGitHub Actionsチェックを無効化
 git config hooks.checkactions false
+
+# ローカルGit設定のシークレット検査を無効化
+git config hooks.checkgitconfig false
 
 # gitleaksシークレット検査を無効化
 git config hooks.gitleaks false
