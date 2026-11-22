@@ -48,13 +48,14 @@ patterns:
 
 일부 hook은 Git 설정 값으로 동작을 제어할 수 있습니다:
 
-| 설정                  | 기본값           | 설명                                                                                 |
-| --------------------- | ---------------- | ------------------------------------------------------------------------------------ |
-| `hooks.allownonascii` | `false`          | `true`로 설정하면 비ASCII 파일명 허용                                                |
-| `hooks.i18nsync`      | `false`          | `true`로 설정하면 모든 언어 변형이 함께 스테이징되어야 함                            |
-| `hooks.maxfilesize`   | `1048576` (1 MB) | 스테이징된 파일의 최대 크기 (바이트)                                                 |
-| `hooks.checkactions`  | `true`           | `false`로 설정하면 `.github/workflows/` 파일의 오래된 GitHub Actions 검사를 비활성화 |
-| `hooks.gitleaks`      | `true`           | `false`로 설정하면 스테이징된 변경에 대한 gitleaks 시크릿 검사를 비활성화            |
+| 설정                   | 기본값           | 설명                                                                                 |
+| ---------------------- | ---------------- | ------------------------------------------------------------------------------------ |
+| `hooks.allownonascii`  | `false`          | `true`로 설정하면 비ASCII 파일명 허용                                                |
+| `hooks.i18nsync`       | `false`          | `true`로 설정하면 모든 언어 변형이 함께 스테이징되어야 함                            |
+| `hooks.maxfilesize`    | `1048576` (1 MB) | 스테이징된 파일의 최대 크기 (바이트)                                                 |
+| `hooks.checkactions`   | `true`           | `false`로 설정하면 `.github/workflows/` 파일의 오래된 GitHub Actions 검사를 비활성화 |
+| `hooks.checkgitconfig` | `true`           | `false`로 설정하면 로컬 Git 설정 시크릿 검사를 비활성화                              |
+| `hooks.gitleaks`       | `true`           | `false`로 설정하면 스테이징된 변경에 대한 gitleaks 시크릿 검사를 비활성화            |
 
 ```bash
 # 비ASCII 파일명 허용
@@ -68,6 +69,9 @@ git config hooks.maxfilesize 5242880
 
 # 오래된 GitHub Actions 검사 비활성화
 git config hooks.checkactions false
+
+# 로컬 Git 설정 시크릿 검사 비활성화
+git config hooks.checkgitconfig false
 
 # gitleaks 시크릿 검사 비활성화
 git config hooks.gitleaks false

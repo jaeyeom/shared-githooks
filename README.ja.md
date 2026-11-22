@@ -57,6 +57,7 @@ commit → pre-commit hooks（並列）→
   ├── 大容量ファイルのステージ？ → 拒否（設定可能な制限）
   ├── 空白エラー？ → git diff --check
   ├── 非ASCIIファイル名？ → 拒否（設定可能）
+  ├── ローカルGit設定に認証情報/トークン？ → 拒否（設定可能）
   └── ワークフロー内の古いGitHub Actions？ → 拒否（設定可能）
 
 commit-msg hooks（並列）→
@@ -112,6 +113,7 @@ test:
 | `lint-gitleaks.sh`          | `gitleaks git --pre-commit --staged`でステージされた変更のシークレットを検査；リポジトリの`.gitleaks.toml`と`.gitleaksignore`を適用                                                            | ツール未インストール、または`git config hooks.gitleaks false`                                                                                           |
 | `test-bazel.sh`             | `bazel-affected-tests`で影響を受けるBazelテストを実行、フォーマットテスト自動修正                                                                                                              | `BUILD`/`BUILD.bazel`ファイルなし、`bazel`未インストール、またはMakefile `check:`ターゲットが`bazel test`に言及                                         |
 | `check-workflow-actions.sh` | ステージされた`.github/workflows/*.yml`で既知のアクションのメジャーバージョンが最小値未満（`actions/checkout@v3`など）、または`golangci-lint-action`がgolangci-lint v1を指定している場合に拒否 | ステージされたワークフローファイルなし、または`git config hooks.checkactions false`                                                                     |
+| `check-git-config.sh`       | 設定値を出力せずにローカル（およびworktree）のGit設定からURL内の認証情報、認証ヘッダー、シークレット/トークンパターンを検査                                                                    | `git config hooks.checkgitconfig false`                                                                                                                 |
 
 ### Commit-msg Hooks（すべて並列実行）
 
@@ -175,6 +177,7 @@ link    .bazelrc.user
 | `git config hooks.i18nsync true`               | ドキュメント同期チェックを有効化（すべての言語バリアントのステージが必要）   |
 | `git config hooks.maxfilesize <bytes>`         | 大容量ファイル閾値を設定（デフォルト：1048576 = 1 MB）                       |
 | `git config hooks.checkactions false`          | 古いGitHub Actionsチェックを無効化（デフォルト有効）                         |
+| `git config hooks.checkgitconfig false`        | ローカルGit設定のシークレット検査を無効化（デフォルト有効）                  |
 | `git config hooks.gitleaks false`              | gitleaksシークレット検査を無効化（デフォルト有効）                           |
 | `git config hooks.worktreeseedmaxsize <bytes>` | worktreeシードのファイルごとのサイズ上限を設定（デフォルト：1048576 = 1 MB） |
 | Makefile `check:`ターゲット                    | 存在時にツール固有のhooksを代替                                              |

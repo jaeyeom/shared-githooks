@@ -358,6 +358,35 @@ golangci-lint v2が互換性を破る設定変更を導入したため、v1.xの
 
 ---
 
+### check-git-config.sh — ローカルGit設定のシークレット検出
+
+ステージされたファイルやコミット履歴のみを検査するシークレットスキャナーが
+見逃す、ローカルGit設定（`git config --local --list -z`、および
+`extensions.worktreeConfig`が`true`の場合は`git config --worktree --list -z`）
+内の機密情報を検査します。
+
+**デフォルトで有効です。** 無効化するには：
+
+```bash
+git config hooks.checkgitconfig false
+```
+
+**検出対象：**
+
+- `remote.*.url`、`remote.*.pushurl`、`http.proxy`、`remote.*.proxy`、
+  `url.<base>.(push)?insteadOf`内の**埋め込みURL認証情報**（`https?://[^/@]+@`、
+  `git@...`や`ssh://...`などのSSH/SCP URLは無視）
+- `http.extraheader`および`http.*.extraheader`内の**認証ヘッダー**
+  （`Authorization:`および`Proxy-Authorization:`、大文字・小文字を区別しない）
+- ローカル設定値内の**一般的なシークレット/トークンパターン**（`gh[pousr]_`、
+  `github_pat_`、`AKIA`/`ASIA`、`glpat-`、`xox[baprs]-`、`sk-...`、PEM
+  秘密鍵ヘッダー）
+
+**安全な出力：** 設定値は出力されず、報告される設定キーのサブセクションに
+含まれる`https?://[^/@]+@`ユーザー情報もマスクされます（`https://***@`）。
+
+---
+
 ## Commit-msg Hooks
 
 コミットメッセージの品質とポリシーを検証するhookです。
